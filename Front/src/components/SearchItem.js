@@ -3,18 +3,18 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 const InventoryList = () => {
-  const [items, setItems] = useState([]);  
+  const [items, setItems] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/lost-items") 
+      .get("http://localhost:8080/api/lost-items")
       .then((response) => {
-        setItems(response.data); 
+        setItems(response.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -24,7 +24,23 @@ const InventoryList = () => {
       });
   }, []);
 
-  
+  // ฟังก์ชันอัพเดต status เป็น "removed"
+  const handleSetStatusItem = (id) => {
+    axios
+      .put(`http://localhost:8080/api/lost-items/status/${id}`)
+      .then((response) => {
+        alert("Item status updated to 'Removed' successfully", response);
+
+        setItems(items.map((item) =>
+          item.id === id ? { ...item, status: "removed" } : item
+        ));
+      })
+      .catch((error) => {
+        console.error("Error updating item status:", error);
+        alert("ไม่สามารถเปลี่ยนสถานะได้");
+      });
+  };
+
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -62,7 +78,7 @@ const InventoryList = () => {
           <tbody>
             {filteredItems.map((item) => (
               <tr key={item.id}>
-                <td className="fs-4">📷</td> {}
+                <td className="fs-4">📷</td>
                 <td>{item.category}</td>
                 <td>{item.name}</td>
                 <td>{item.date}</td>
@@ -75,7 +91,7 @@ const InventoryList = () => {
                 </td>
                 <td>
                   <button
-                    onClick={() => navigate(`/remove/${item.id}`)}
+                    onClick={() => handleSetStatusItem(item.id)}
                     className="btn btn-danger btn-sm"
                   >
                     📤
@@ -84,6 +100,7 @@ const InventoryList = () => {
               </tr>
             ))}
           </tbody>
+
         </table>
       )}
     </div>

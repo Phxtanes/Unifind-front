@@ -23,7 +23,20 @@ public class LostItemController {
 
     // 🔹 ดึงรายการของหายทั้งหมด
     @GetMapping
-    public List<LostItem> getAllLostItems() {
-        return repository.findAll();
+    public List<LostItem> getAllLostItems() {return repository.findAll();
     }
+
+    @GetMapping("/status") //ดูของตาม status ลองเทสได้  http://localhost:8080/api/lost-items/status?status=เก็บอยู่
+    public List<LostItem> getLostItemsByStatus(@RequestParam String status) {
+        return repository.findByStatus(status);
+    }
+
+    @PutMapping("/status/{id}") //รับ pk จาก font แล้วมาเซ้ตค่าใหม่เป็น Remove
+    public LostItem updateLostItemStatus(@PathVariable String id) {
+        LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
+        item.setStatus("removed");
+        return repository.save(item);
+    }
+
+
 }

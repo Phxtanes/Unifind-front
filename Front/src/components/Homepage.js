@@ -7,9 +7,9 @@ const Home = () => {
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
       <div className="row w-50 d-flex justify-content-between">
- 
+
         <div
-          className="col-md-5 d-flex justify-content-center align-items-center bg-primary text-white p-5 rounded text-center"
+          className="col-md-3 d-flex justify-content-center align-items-center bg-primary text-white p-5 rounded text-center"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/lostitemfrom")}
         >
@@ -17,7 +17,7 @@ const Home = () => {
         </div>
 
         <div
-          className="col-md-5 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
+          className="col-md-3 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/deletefrom")}
         >
@@ -25,12 +25,13 @@ const Home = () => {
         </div>
 
         <div
-          className="col-md-5 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
+          className="col-md-3 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
           style={{ cursor: "pointer" }}
           onClick={() => navigate("/inventory")}
         >
           <h2>Search Item</h2>
         </div>
+        
       </div>
     </div>
   );
