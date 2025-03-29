@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Document(collection = "lost_items")
+@Document(collection = "Unifind")
 public class LostItem {
     @Id
     private String id;
