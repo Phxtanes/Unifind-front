@@ -1,16 +1,18 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./components/Homepage";
+import Lostitemfrom from "./components/LostItemForm";
+import "bootstrap/dist/css/bootstrap.min.css";
 
-import './App.css';
-import LostItemForm from "./components/LostItemForm";
-import LostItemList from "./components/LostItemList";
-
-function App() {
+const App = () => {
   return (
-    <div>
-      <h1>ระบบบันทึกของหาย</h1>
-      <LostItemForm />
-      <LostItemList />
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/lostitemfrom" element={<Lostitemfrom />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
