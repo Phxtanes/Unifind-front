@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./components/Homepage";
 import Lostitemfrom from "./components/LostItemForm";
+import InventoryList from "./components/SearchItem";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/lostitemfrom" element={<Lostitemfrom />} />
+        <Route path="/inventory" element={<InventoryList/>} />
       </Routes>
     </Router>
   );

@@ -23,6 +23,14 @@ const Home = () => {
         >
           <h2>Delete Item</h2>
         </div>
+
+        <div
+          className="col-md-5 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate("/inventory")}
+        >
+          <h2>Search Item</h2>
+        </div>
       </div>
     </div>
   );
