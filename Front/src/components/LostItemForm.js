@@ -11,7 +11,7 @@ const LostItemForm = () => {
     picture: "",
     namereport: "",
     locker: "",
-    status: "เก็บอยู่",
+    status: "stored",
     identityDoc: "",
     receiver: "",
   });
@@ -37,7 +37,7 @@ const LostItemForm = () => {
         picture: "",
         namereport: "",
         locker: "",
-        status: "เก็บอยู่",
+        status: "stored",
         identityDoc: "",
         receiver: "",
       });
