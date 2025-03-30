@@ -46,11 +46,11 @@ public class LostItemController {
     }
 
     @PutMapping("/status/{id}") //รับ pk จาก font แล้วมาเซ้ตค่าใหม่เป็น Remove
-    public LostItem updateLostItemStatus(@PathVariable String id, @RequestBody LostItem info) {
+    public LostItem updateLostItemStatus(@PathVariable String id,@RequestBody LostItem updatedData) {
         LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
-        item.setIdentityDoc(info.getIdentityDoc());
-        item.setReceiver(info.getReceiver());
-        item.setStaffName(info.getStaffName());
+        item.setIdentityDoc(updatedData.getIdentityDoc());
+        item.setReceiver(updatedData.getReceiver());
+        item.setStaffName(updatedData.getStaffName());
         item.setStatus("removed");
 
         return repository.save(item);
