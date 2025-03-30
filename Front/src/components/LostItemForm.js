@@ -50,12 +50,12 @@ const LostItemForm = () => {
   return (
     <div className="container mt-5">
       <div className="card shadow-lg p-4">
-        <h2 className="card-title text-center mb-4">เพิ่มของหาย</h2>
+        <h2 className="card-title text-center mb-4">นำของเข้า</h2>
         <form onSubmit={handleSubmit} className="form-group">
           <input
             type="text"
             name="name"
-            placeholder="ชื่อของหาย"
+            placeholder="ชื่อสิ่งของ"
             value={item.name}
             onChange={handleChange}
             required
