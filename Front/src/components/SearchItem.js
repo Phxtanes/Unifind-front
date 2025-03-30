@@ -7,12 +7,11 @@ const InventoryList = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/api/lost-items")
+      .get("http://localhost:8080/api/lost-items/status/stored")
       .then((response) => {
         setItems(response.data);
         setLoading(false);
@@ -29,7 +28,7 @@ const InventoryList = () => {
       .put(`http://localhost:8080/api/lost-items/status/${id}`)
       .then((response) => {
         alert("Item status updated to 'Removed' successfully", response);
-
+  
         setItems(items.map((item) =>
           item.id === id ? { ...item, status: "removed" } : item
         ));
@@ -85,7 +84,7 @@ const InventoryList = () => {
                 <td>{item.status}</td>
                 <td>
                   <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
-                   📝
+                  📝
                   </Link>
                 </td>
                 <td>

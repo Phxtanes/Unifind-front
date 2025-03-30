@@ -13,6 +13,8 @@ const EditItemForm = () => {
     description: "",
     locker: "",
     status: "",
+    picture: "",
+    namereport: "",
   });
 
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า"];
@@ -37,7 +39,7 @@ const EditItemForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:8080/api/lost-items/${id}`, item)
+      .put(`http://localhost:8080/api/lost-items/edit/${id}`, item)
       .then(() => {
         alert("อัปเดตข้อมูลสำเร็จ!");
         navigate("/inventory");
@@ -46,14 +48,14 @@ const EditItemForm = () => {
         console.error("Error updating item:", error);
         alert("เกิดข้อผิดพลาด ไม่สามารถอัปเดตข้อมูลได้");
       });
-  };  
+  };
 
   return (
     <div className="container mt-5">
       <div className="card shadow-lg p-4">
         <h2 className="card-title text-center mb-4">แก้ไขข้อมูลของหาย</h2>
         <form onSubmit={handleSubmit} className="form-group">
-        <input
+          <input
             type="text"
             name="name"
             placeholder="ชื่อของหาย"

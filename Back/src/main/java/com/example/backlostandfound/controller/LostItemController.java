@@ -26,9 +26,23 @@ public class LostItemController {
     public List<LostItem> getAllLostItems() {return repository.findAll();
     }
 
-    @GetMapping("/status") //ดูของตาม status ลองเทสได้  http://localhost:8080/api/lost-items/status?status=เก็บอยู่
-    public List<LostItem> getLostItemsByStatus(@RequestParam String status) {
-        return repository.findByStatus(status);
+    //ดึงของจาก ID
+    @GetMapping("/{id}")
+    public LostItem getLostItemById(@PathVariable String id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lost item not found"));
+    }
+
+    //ดูของตาม status removed
+    @GetMapping("/status/removed")
+    public List<LostItem> getLostItemsByRemoved() {
+        return repository.findByStatus("removed");
+    }
+
+    //ดูของตาม status stored
+    @GetMapping("/status/stored")
+    public List<LostItem> getLostItemsByStored() {
+        return repository.findByStatus("stored");
     }
 
     @PutMapping("/status/{id}") //รับ pk จาก font แล้วมาเซ้ตค่าใหม่เป็น Remove
@@ -38,5 +52,19 @@ public class LostItemController {
         return repository.save(item);
     }
 
+    @PutMapping("/edit/{id}")
+    public LostItem updateLostItem(@PathVariable String id, @RequestBody LostItem newItem) {
+        LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
+
+        item.setName(newItem.getName().toUpperCase());
+        item.setCategory(newItem.getCategory());
+        item.setPlace(newItem.getPlace());
+        item.setDescription(newItem.getDescription());
+        item.setPicture(newItem.getPicture());
+        item.setNamereport(newItem.getNamereport());
+        item.setLocker(newItem.getLocker());
+
+        return repository.save(item);
+    }
 
 }
