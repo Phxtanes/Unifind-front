@@ -7,7 +7,7 @@ const InventoryList = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     axios
@@ -23,20 +23,13 @@ const InventoryList = () => {
       });
   }, []);
 
-  const handleSetStatusItem = (id) => {
-    axios
-      .put(`http://localhost:8080/api/lost-items/status/${id}`)
-      .then((response) => {
-        alert("Item status updated to 'Removed' successfully", response);
-
-        setItems(items.map((item) =>
-          item.id === id ? { ...item, status: "removed" } : item
-        ));
-      })
-      .catch((error) => {
-        console.error("Error updating item status:", error);
-        alert("ไม่สามารถเปลี่ยนสถานะได้");
-      });
+  const formatThaiDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear() + 543;
+    return `${day}/${month}/${year}`;
   };
 
   const filteredItems = items.filter((item) =>
@@ -60,50 +53,50 @@ const InventoryList = () => {
       ) : error ? (
         <p className="text-center text-danger">{error}</p>
       ) : (
-        <table className="table table-bordered text-center">
-          <thead className="thead-dark">
-            <tr>
-              <th>รูปภาพ</th>
-              <th>ประเภท</th>
-              <th>ชื่อสิ่งของ</th>
-              <th>วันที่พบ</th>
-              <th>ล็อคเกอร์</th>
-              <th>สถานะ</th>
-              <th>แก้ไข</th>
-              <th>นำออก</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredItems.map((item) => (
-              <tr key={item.id}>
-                <td className="fs-4">📷</td>
-                <td>{item.category}</td>
-                <td>{item.name}</td>
-                <td>{item.date}</td>
-                <td>{item.locker}</td>
-                <td>{item.status}</td>
-                <td>
-                  <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
-                    📝
-                  </Link>
-                </td>
-                <td>
-                  {/* <button
-                    onClick={() => handleSetStatusItem(item.id)}
-                    className="btn btn-danger btn-sm"
-                  >
-                    📤
-                  </button> */}
-
-                  <Link to={`/remove/${item.id}`} className="btn btn-warning btn-sm">
-                  📤
-                  </Link>
-                </td>
+        <>
+          <table className="table table-bordered text-center">
+            <thead className="thead-dark">
+              <tr>
+                <th>รูปภาพ</th>
+                <th>ประเภท</th>
+                <th>ชื่อสิ่งของ</th>
+                <th>วันที่พบ</th>
+                <th>ล็อคเกอร์</th>
+                <th>สถานะ</th>
+                <th>แก้ไข</th>
+                <th>นำออก</th>
               </tr>
-            ))}
-          </tbody>
+            </thead>
+            <tbody>
+              {filteredItems.map((item) => (
+                <tr key={item.id}>
+                  <td className="fs-4">📷</td>
+                  <td>{item.category}</td>
+                  <td>{item.name}</td>
+                  <td>{formatThaiDate(item.date)}</td>
+                  <td>{item.locker}</td>
+                  <td>{item.status}</td>
+                  <td>
+                    <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
+                      📝
+                    </Link>
+                  </td>
+                  <td>
+                    <Link to={`/remove/${item.id}`} className="btn btn-danger btn-sm">
+                      📤
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
-        </table>
+          <div className="d-flex justify-content-end mt-3">
+            <button onClick={() => navigate("/")} className="btn btn-secondary">
+              ย้อนกลับ
+            </button>
+          </div>
+        </>
       )}
     </div>
   );
