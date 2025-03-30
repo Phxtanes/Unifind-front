@@ -17,7 +17,12 @@ const Removepage = () => {
         status: "",
         picture: "",
         namereport: "",
+        identityDoc:"",
+        receiver:"",
+        staffName:""
     });
+    const [items, setItems] = useState([]);
+
 
     const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า"];
 
@@ -34,8 +39,25 @@ const Removepage = () => {
             });
     }, [id]);
 
+    
     const handleChange = (e) => {
         setItem({ ...item, [e.target.name]: e.target.value });
+    };
+
+    const handleSetStatusItem = (id) => {
+        axios
+            .put(`http://localhost:8080/api/lost-items/status/${id}`)
+            .then((response) => {
+                alert("Item status updated to 'Removed' successfully", response);
+
+                setItems(items.map((item) =>
+                    item.id === id ? { ...item, status: "removed" } : item
+                ));
+            })
+            .catch((error) => {
+                console.error("Error updating item status:", error);
+                alert("ไม่สามารถเปลี่ยนสถานะได้");
+            });
     };
 
     const handleSubmit = (e) => {
@@ -55,7 +77,7 @@ const Removepage = () => {
     return (
         <div className="container mt-5">
             <div className="card shadow-lg p-4">
-                <h2 className="card-title text-center mb-4">แก้ไขข้อมูลของหาย</h2>
+                <h2 className="card-title text-center mb-4">นำออก</h2>
                 <form onSubmit={handleSubmit} className="form-group">
                     <input
                         type="text"
@@ -73,6 +95,7 @@ const Removepage = () => {
                         value={item.category}
                         onChange={handleChange}
                         required
+                        disabled
                         className="form-control mb-3"
                     >
                         <option value="">เลือกประเภท</option>
@@ -90,6 +113,7 @@ const Removepage = () => {
                         value={item.place}
                         onChange={handleChange}
                         required
+                        disabled
                         className="form-control mb-3"
                     />
 
@@ -99,6 +123,7 @@ const Removepage = () => {
                         value={item.description}
                         onChange={handleChange}
                         required
+                        disabled
                         className="form-control mb-3"
                     />
 
@@ -108,6 +133,7 @@ const Removepage = () => {
                         placeholder="URL รูปภาพ"
                         value={item.picture}
                         onChange={handleChange}
+                        disabled
                         className="form-control mb-3"
                     />
 
@@ -118,6 +144,7 @@ const Removepage = () => {
                         value={item.namereport}
                         onChange={handleChange}
                         required
+                        disabled
                         className="form-control mb-3"
                     />
 
@@ -127,6 +154,7 @@ const Removepage = () => {
                         placeholder="เลขล็อคเกอร์ (ถ้ามี)"
                         value={item.locker}
                         onChange={handleChange}
+                        disabled
                         className="form-control mb-3"
                     />
 
@@ -142,7 +170,6 @@ const Removepage = () => {
                         type="text"
                         name="เอกสารยืนยันตัวตน"
                         placeholder="เอกสารยืนยันตัวตน (ถ้ามี)"
-                        
                         onChange={handleChange}
                         className="form-control mb-3"
                     />
@@ -151,12 +178,12 @@ const Removepage = () => {
                         type="text"
                         name="ชื่อเจ้าหน้าที่นำของออก"
                         placeholder="ชื่อเจ้าหน้าที่นำของออก"
-                        
+
                         onChange={handleChange}
                         className="form-control mb-3"
                     />
 
-                    <button type="submit" className="btn btn-danger w-100 ">
+                    <button type="submit" className="btn btn-danger w-100 " onClick={() => handleSetStatusItem(item.id)}>
                         นำของออก
                     </button>
                 </form>
