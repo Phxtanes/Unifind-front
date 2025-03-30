@@ -6,32 +6,32 @@ const Home = () => {
 
   return (
     <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="row w-50 d-flex justify-content-between">
-
+      <div className="row w-75 d-flex justify-content-center">
+        
         <div
-          className="col-md-3 d-flex justify-content-center align-items-center bg-primary text-white p-5 rounded text-center"
-          style={{ cursor: "pointer" }}
+          className="col-12 col-md-4 d-flex justify-content-center align-items-center bg-primary text-white p-5 rounded text-center m-2"
+          style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/lostitemfrom")}
         >
-          <h2>Lost Item</h2>
+          <h2>นำของเข้า</h2>
         </div>
 
         <div
-          className="col-md-3 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
-          style={{ cursor: "pointer" }}
+          className="col-12 col-md-4 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center m-2"
+          style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/deletefrom")}
         >
-          <h2>Delete Item</h2>
+          <h2>นำของออก</h2>
         </div>
 
         <div
-          className="col-md-3 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center"
-          style={{ cursor: "pointer" }}
+          className="col-12 col-md-4 d-flex justify-content-center align-items-center bg-warning text-white p-5 rounded text-center m-2"
+          style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/inventory")}
         >
-          <h2>Search Item</h2>
+          <h2>ค้นหาสิ่งของ</h2>
         </div>
-        
+
       </div>
     </div>
   );
