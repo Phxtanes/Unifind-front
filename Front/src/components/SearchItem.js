@@ -24,7 +24,6 @@ const InventoryList = () => {
       });
   }, []);
 
-  // ฟังก์ชันอัพเดต status เป็น "removed"
   const handleSetStatusItem = (id) => {
     axios
       .put(`http://localhost:8080/api/lost-items/status/${id}`)
@@ -86,7 +85,7 @@ const InventoryList = () => {
                 <td>{item.status}</td>
                 <td>
                   <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
-                    📝
+                   📝
                   </Link>
                 </td>
                 <td>
