@@ -1,5 +1,6 @@
 package com.example.backlostandfound.model;
 
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,7 +11,6 @@ import java.util.UUID;
 public class LostItem {
     @Id
     private String id;
-
     private String name;
     private String category;
     private String place;
@@ -23,15 +23,14 @@ public class LostItem {
     private String status;
     private String identityDoc;
     private String receiver;
+    private String staffName;
 
     public LostItem() {
         this.id = UUID.randomUUID().toString();  // สร้าง ID อัตโนมัติ
     }
 
-    public LostItem(String name, String category, String place, LocalDateTime date, String description,
-                    String picture, String namereport, Long locker, String id_qr, String status,
-                    String identityDoc, String receiver) {
-        this.id = UUID.randomUUID().toString();
+    public LostItem(String name, String category, String place, LocalDateTime date, String description, String picture,
+                    String namereport, Long locker, String id_qr, String status, String identityDoc, String receiver, String staffName) {
         this.name = name;
         this.category = category;
         this.place = place;
@@ -44,7 +43,9 @@ public class LostItem {
         this.status = status;
         this.identityDoc = identityDoc;
         this.receiver = receiver;
+        this.staffName = staffName;
     }
+
 
     public String getId() {
         return id;
@@ -60,6 +61,14 @@ public class LostItem {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStaffName() {
+        return staffName;
+    }
+
+    public void setStaffName(String staffName) {
+        this.staffName = staffName;
     }
 
     public String getCategory() {

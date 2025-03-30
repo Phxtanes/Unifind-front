@@ -14,6 +14,7 @@ const LostItemForm = () => {
     status: "stored",
     identityDoc: "",
     receiver: "",
+    staffName:""
   });
 
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก","รองเท้า"];
@@ -40,6 +41,7 @@ const LostItemForm = () => {
         status: "stored",
         identityDoc: "",
         receiver: "",
+        staffName:""
       });
     } catch (error) {
       console.error("Error adding lost item:", error);

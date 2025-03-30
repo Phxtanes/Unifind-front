@@ -28,7 +28,7 @@ const InventoryList = () => {
       .put(`http://localhost:8080/api/lost-items/status/${id}`)
       .then((response) => {
         alert("Item status updated to 'Removed' successfully", response);
-  
+
         setItems(items.map((item) =>
           item.id === id ? { ...item, status: "removed" } : item
         ));
@@ -64,10 +64,10 @@ const InventoryList = () => {
           <thead className="thead-dark">
             <tr>
               <th>รูปภาพ</th>
-              <th>หมวดหมู่</th>
+              <th>ประเภท</th>
               <th>ชื่อสิ่งของ</th>
               <th>วันที่พบ</th>
-              <th>ตู้เก็บ</th>
+              <th>ล็อคเกอร์</th>
               <th>สถานะ</th>
               <th>แก้ไข</th>
               <th>นำออก</th>
@@ -84,16 +84,20 @@ const InventoryList = () => {
                 <td>{item.status}</td>
                 <td>
                   <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
-                  📝
+                    📝
                   </Link>
                 </td>
                 <td>
-                  <button
+                  {/* <button
                     onClick={() => handleSetStatusItem(item.id)}
                     className="btn btn-danger btn-sm"
                   >
                     📤
-                  </button>
+                  </button> */}
+
+                  <Link to={`/remove/${item.id}`} className="btn btn-warning btn-sm">
+                  📤
+                  </Link>
                 </td>
               </tr>
             ))}

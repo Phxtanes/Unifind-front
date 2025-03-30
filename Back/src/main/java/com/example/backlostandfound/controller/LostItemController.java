@@ -52,6 +52,7 @@ public class LostItemController {
         return repository.save(item);
     }
 
+    //edit ฟรอม
     @PutMapping("/edit/{id}")
     public LostItem updateLostItem(@PathVariable String id, @RequestBody LostItem newItem) {
         LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
