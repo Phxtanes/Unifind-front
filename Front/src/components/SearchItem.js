@@ -70,7 +70,14 @@ const InventoryList = () => {
             <tbody>
               {filteredItems.map((item) => (
                 <tr key={item.id}>
-                  <td className="fs-4">📷</td>
+                  <td className="fs-4">
+                    {/* เช็คว่า รูปภาพมีค่าไหม */}
+                    {item.picture ? (
+                      <img src={item.picture} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                    ) : (
+                      "📷"  // ถ้าไม่มีภาพให้แสดงเป็นไอคอน 📷
+                    )}
+                  </td>
                   <td>{item.category}</td>
                   <td>{item.name}</td>
                   <td>{formatThaiDate(item.date)}</td>
