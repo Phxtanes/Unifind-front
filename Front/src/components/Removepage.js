@@ -146,7 +146,7 @@ const Removepage = () => {
               </div>
     
               <div className="d-flex justify-content-end gap-2">
-                <button type="button" className="btn btn-secondary" onClick={() => navigate("/")}>ยกเลิก</button>
+                <button type="button" className="btn btn-secondary" onClick={() => navigate("/inventory")}>ยกเลิก</button>
                 <button type="submit" className="btn btn-danger">นำของออก</button>
               </div>
             </form>

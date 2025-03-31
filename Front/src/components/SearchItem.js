@@ -100,7 +100,7 @@ const InventoryList = () => {
           </table>
 
           <div className="d-flex justify-content-end mt-3">
-            <button onClick={() => navigate("/")} className="btn btn-secondary">
+            <button onClick={() => navigate("/home")} className="btn btn-secondary">
               ย้อนกลับ
             </button>
           </div>

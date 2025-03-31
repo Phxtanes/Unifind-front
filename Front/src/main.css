@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap');
+
+  body {
+    margin: 0;
+    font-family: 'Kanit', sans-serif;
+  }
+
+  .main-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  .left-panel {
+    background-color: #2e2d88;
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px;
+    color: white;
+  }
+  
+  .right-panel {
+    background-color: #ff6600;
+    width: 30%;
+  }
+  
+  .logo {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    margin-bottom: 20px;
+  }
+  
+  .logo-white-box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 2px solid white;
+  }
+  
+  .logo-orange-box {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #ff6600;
+  }
+  
+  .content-container {
+    margin-top: 40px;
+  }
+  
+  .title-container {
+    margin-top: 20px;
+    margin-left: 150px;
+  }
+  
+  .office-of {
+    font-size: 80px;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+  
+  .student {
+    font-size: 120px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 0.9;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .welfare {
+    font-size: 130px;
+    font-weight: 1000;
+    margin: 0;
+    line-height: 0.9;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .thai-text {
+    font-size: 26px;
+    font-weight: 800;
+    margin-top: 10px;
+  }
+  
+  .contact-info {
+    margin-bottom: 30px;
+  }
+  
+  .contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .contact-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    margin-right: 15px;
+    font-size: 24px;
+  }
+  
+  .contact-text {
+    font-size: 16px;
+  }
+
+  .bg-orange {
+    background-color: #ff6600;
+    width: 30%;
+    height: 100vh;
+    position: relative;
+  }
+
+  .btn-primary.login {
+    background-color: #2F318B;
+    position: absolute;
+    bottom: 40px; 
+    right: 40px;  
+  }
+  
+  

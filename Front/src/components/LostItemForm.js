@@ -112,8 +112,8 @@ const LostItemForm = () => {
           </div>
 
           <div className="d-flex justify-content-end gap-2">
-            <button type="button" className="btn btn-secondary" onClick={() => (window.location.href = "/")}>Cancel</button>
-            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="button" className="btn btn-secondary" onClick={() => (window.location.href = "/home")}>Cancel</button>
+            <button type="submit" className="btn btn-primary save">Save</button>
           </div>
         </form>
       </div>

@@ -20,7 +20,6 @@ const Home = () => {
           <h4>นำของเข้า</h4>
         </div>
 
-
          {/* <div
           className="col-12 col-md-4 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center m-2"
           style={{ cursor: "pointer", minHeight: "200px" }}
