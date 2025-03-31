@@ -18,9 +18,6 @@ const Removepage = () => {
         staffName: ""
     });
 
-
-    const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า"];
-
     useEffect(() => {
         console.log(`เรียก API ด้วย ID: ${id}`);
         axios
@@ -60,105 +57,102 @@ const Removepage = () => {
 
 
     return (
-        <div className="container mt-5">
-            <div className="card shadow-lg p-4">
-                <h2 className="card-title text-center mb-4">นำออก</h2>
-                <form className="form-group" onSubmit={handleSetStatusItem}>
-                    <div className="form-group mb-3">
-                        <label>ชื่อของหาย</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.name}
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>ประเภท</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.category}
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>สถานที่พบ</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.place}
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>รายละเอียด</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.description}
-
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>URL รูปภาพ</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.picture}
-
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>ชื่อผู้แจ้ง</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.namereport}
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>เลขล็อคเกอร์ (ถ้ามี)</label>
-                        <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
-                            {item.locker}
-
-                        </div>
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>ชื่อผู้มารับของ</label>
-                        <input
-                            type="text"
-                            name="receiver"
-                            required
-                            value={item.receiver}
-                            onChange={handleChange} // ให้สามารถแก้ไขได้
-                            className="form-control"
-                        />
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>เอกสารยืนยันตัวตน (ถ้ามี)</label>
-                        <input
-                            type="text"
-                            name="identityDoc"
-                            value={item.identityDoc}
-                            onChange={handleChange} // ให้สามารถแก้ไขได้
-                            className="form-control"
-                        />
-                    </div>
-
-                    <div className="form-group mb-3">
-                        <label>ชื่อเจ้าหน้าที่นำของออก</label>
-                        <input
-                            type="text"
-                            name="staffName"
-                            required
-                            value={item.staffName}
-                            onChange={handleChange} // ให้สามารถแก้ไขได้
-                            className="form-control"
-                        />
-                    </div>
-
-                    <button type="submit" className="btn btn-danger w-100">
-                        นำของออก
-                    </button>
-                </form>
-            </div>
+        <div className="container mt-4">
+          <div className="card shadow p-4">
+            <h2 className="card-title text-center mb-3">แจ้งนำสิ่งของออก</h2>
+            <hr />
+            <form onSubmit={handleSetStatusItem}>
+              <div className="row mt-3">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ชื่อสิ่งของ<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.name}
+                  </div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ประเภทสิ่งของ<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.category}
+                  </div>
+                </div>
+              </div>
+    
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">สถานที่พบ<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.place}
+                  </div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">รายละเอียด<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.description}
+                  </div>
+                </div>
+              </div>
+    
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ชื่อผู้แจ้ง<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.namereport}
+                  </div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">เลขล็อคเกอร์ (ถ้ามี)<span className="red-star">*</span></label>
+                  <div className="form-control" style={{ backgroundColor: '#dcdcdc' }}>
+                    {item.locker}
+                  </div>
+                </div>
+              </div>
+    
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ชื่อผู้มารับของ <span className="red-star">*</span></label>
+                  <input
+                    type="text"
+                    name="receiver"
+                    required
+                    value={item.receiver}
+                    onChange={handleChange}  // แก้ไขได้
+                    className="form-control"
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">เอกสารยืนยันตัวตน <span className="red-star">*</span></label>
+                  <input
+                    type="file"
+                    name="identityDoc"
+                    value={item.identityDoc}
+                    onChange={handleChange}  // แก้ไขได้
+                    className="form-control"
+                  />
+                </div>
+              </div>
+    
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ชื่อเจ้าหน้าที่นำของออก <span className="red-star">*</span></label>
+                  <input
+                    type="text"
+                    name="staffName"
+                    required
+                    value={item.staffName}
+                    onChange={handleChange} // แก้ไขได้
+                    className="form-control"
+                  />
+                </div>
+              </div>
+    
+              <div className="d-flex justify-content-end gap-2">
+                <button type="button" className="btn btn-secondary" onClick={() => navigate("/")}>ยกเลิก</button>
+                <button type="submit" className="btn btn-danger">นำของออก</button>
+              </div>
+            </form>
+          </div>
         </div>
-
-    );
+      );
 };
 
 

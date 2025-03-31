@@ -82,6 +82,7 @@ const InventoryList = () => {
                   <td>{item.name}</td>
                   <td>{formatThaiDate(item.date)}</td>
                   <td>{item.locker}</td>
+                  {/* ต้องเพิ่มคนรับด้วย ก็คือคนที่ล้อคอินและรับของเข้า */}
                   <td>{item.status}</td>
                   <td>
                     <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
