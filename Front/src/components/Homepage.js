@@ -13,7 +13,7 @@ const Home = () => {
           onClick={() => navigate("/lostitemfrom")}
         >
           <img 
-           src={require("../images/import.png")}
+            src="/images/import.png"
             alt="" 
             style={{ width: "300px", height: "300px", marginBottom: "30px" }}
           />
@@ -36,7 +36,7 @@ const Home = () => {
           onClick={() => navigate("/inventory")}
         >
           <img 
-            src={require("../images/search.png")}
+            src="/images/search.png"
             alt="" 
             style={{ width: "300px", height: "300px", marginBottom: "10px" }}
           />
