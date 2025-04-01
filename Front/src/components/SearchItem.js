@@ -51,7 +51,7 @@ const InventoryList = () => {
             { targets: [0, 6, 7], orderable: false }, // ไม่ให้สามารถ sort คอลัมน์ที่ 0 (รูปภาพ), 6 (แก้ไข), 7 (นำออก)
           ],
         });
-      }, 0);
+      }, 500);
     }
   }, [loading, error, items]);
   
