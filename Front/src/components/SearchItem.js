@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const InventoryList = () => {
@@ -8,10 +8,12 @@ const InventoryList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // จำนวนของต่อ 1 หน้านะจ้ะ
+  const itemsPerPage = 10; 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
+  const fetchItems = () => {
+    setLoading(true);
     axios
       .get("http://localhost:8080/api/lost-items/status/stored")
       .then((response) => {
@@ -23,7 +25,18 @@ const InventoryList = () => {
         setError("ไม่สามารถโหลดข้อมูลได้");
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchItems();
   }, []);
+
+  useEffect(() => {
+    if (location.state && location.state.updated) {
+      fetchItems();
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   const formatThaiDate = (dateString) => {
     if (!dateString) return "-";
@@ -115,8 +128,7 @@ const InventoryList = () => {
               กลับไปยังหน้าหลัก
             </button>
 
-
-            <nav>   {/* ปุ่มสำหรับเปลี่ยนหน้านะจ้ะ */}
+            <nav>
               <ul className="pagination mb-0">
                 <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
                   <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
@@ -138,8 +150,6 @@ const InventoryList = () => {
               </ul>
             </nav>
           </div>
-
-
         </>
       )}
     </div>
