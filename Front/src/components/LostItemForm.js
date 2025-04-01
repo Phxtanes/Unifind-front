@@ -9,7 +9,6 @@ const LostItemForm = () => {
     place: "",
     date: "",
     description: "",
-    picture: "",
     namereport: "",
     locker: "",
     status: "stored",
@@ -18,25 +17,48 @@ const LostItemForm = () => {
     staffName: ""
   });
 
+  const [file, setFile] = useState(null); // ⬅️ เพิ่ม state สำหรับเก็บรูป
+
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า", "อื่นๆ"];
 
   const handleChange = (e) => {
     setItem({ ...item, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]); // ⬅️ เก็บไฟล์ที่เลือกไว้
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
+      // 🔹 1️⃣ ส่งข้อมูลของหายไปที่ Backend
       const newItem = { ...item, date: new Date().toISOString() };
-      await axios.post("http://localhost:8080/api/lost-items", newItem);
-      alert("เพิ่มของหายเรียบร้อย!");
+      const response = await axios.post("http://localhost:8080/api/lost-items", newItem);
+      const lostItemId = response.data.id; // รับค่า ID ของของหายที่เพิ่มใหม่
+
+      // 🔹 2️⃣ อัปโหลดรูปภาพถ้ามีการเลือกไฟล์
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+
+        await axios.post(`http://localhost:8080/api/lost-items/${lostItemId}/upload-image`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        alert("เพิ่มของหายและอัปโหลดรูปภาพเรียบร้อย!");
+      } else {
+        alert("เพิ่มของหายเรียบร้อย (ไม่มีรูปภาพ)");
+      }
+
+      // 🔹 3️⃣ รีเซ็ตฟอร์ม
       setItem({
         name: "",
         category: "",
         place: "",
         date: "",
         description: "",
-        picture: "",
         namereport: "",
         locker: "",
         status: "stored",
@@ -44,8 +66,9 @@ const LostItemForm = () => {
         receiver: "",
         staffName: ""
       });
+      setFile(null);
     } catch (error) {
-      console.error("Error adding lost item:", error);
+      console.error("Error:", error);
       alert("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");  
     }
   };
@@ -54,7 +77,7 @@ const LostItemForm = () => {
     <div className="container mt-4">
       <div className="card shadow p-4">
         <h2 className="card-title text-center mb-3">แจ้งนำสิ่งของเข้า</h2>
-          <hr></hr>
+        <hr />
         <form onSubmit={handleSubmit}>
           <div className="row mt-3">
             <div className="col-md-6 mb-3">
@@ -91,7 +114,7 @@ const LostItemForm = () => {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">รูปภาพ <span className="red-star">*</span></label>
-              <input type="file" className="form-control" />
+              <input type="file" className="form-control" onChange={handleFileChange} />
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">ระบุชื่อผู้รับแจ้งทรัพย์สินสูญหาย <span className="red-star">*</span></label>
@@ -106,8 +129,7 @@ const LostItemForm = () => {
             </div>
             <div className="col-md-6 mb-3 text-center">
               <label className="form-label">คิวอาร์โค้ด</label>
-              <div className="border p-3 rounded bg-light">
-              </div>
+              <div className="border p-3 rounded bg-light"></div>
             </div>
           </div>
 

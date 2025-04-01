@@ -71,18 +71,21 @@ const InventoryList = () => {
               {filteredItems.map((item) => (
                 <tr key={item.id}>
                   <td className="fs-4">
-                    {/* เช็คว่า รูปภาพมีค่าไหม */}
                     {item.picture ? (
-                      <img src={item.picture} alt={item.name} style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                      <img 
+                        src={`http://localhost:8080/api/lost-items/${item.id}/image`} 
+                        alt={item.name} 
+                        style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
+                        onError={(e) => e.target.style.display = "none"} // ซ่อนรูปถ้าลิงก์เสีย
+                      />
                     ) : (
-                      "📷"  // ถ้าไม่มีภาพให้แสดงเป็นไอคอน 📷
+                      "📷" // ถ้าไม่มีรูปให้แสดงอีโมจิรูปกล้อง
                     )}
                   </td>
                   <td>{item.category}</td>
                   <td>{item.name}</td>
                   <td>{formatThaiDate(item.date)}</td>
                   <td>{item.locker}</td>
-                  {/* ต้องเพิ่มคนรับด้วย ก็คือคนที่ล้อคอินและรับของเข้า */}
                   <td>{item.status}</td>
                   <td>
                     <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
