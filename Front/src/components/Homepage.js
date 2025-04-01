@@ -12,15 +12,15 @@ const Home = () => {
           style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/lostitemfrom")}
         >
-          <img 
+          <img
             src="/images/import.png"
-            alt="" 
+            alt=""
             style={{ width: "300px", height: "300px", marginBottom: "30px" }}
           />
           <h4>นำของเข้า</h4>
         </div>
 
-         {/* <div
+        {/* <div
           className="col-12 col-md-4 d-flex justify-content-center align-items-center bg-danger text-white p-5 rounded text-center m-2"
           style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/deletefrom")}
@@ -34,9 +34,9 @@ const Home = () => {
           style={{ cursor: "pointer", minHeight: "200px" }}
           onClick={() => navigate("/inventory")}
         >
-          <img 
+          <img
             src="/images/search.png"
-            alt="" 
+            alt=""
             style={{ width: "300px", height: "300px", marginBottom: "10px" }}
           />
           <h4>ค้นหาสิ่งของ</h4>
@@ -48,4 +48,3 @@ const Home = () => {
 
 export default Home;
 
-       
