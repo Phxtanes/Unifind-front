@@ -39,14 +39,11 @@ function Main() {
           </div>
         </div>
       </div>
-
-      <div className="bg-orange">
-        <button 
+      <button 
           onClick={() => navigate("/home")} 
           className="btn btn-primary login">
           เข้าสู่ระบบ(สำหรับเจ้าหน้าที่)
-        </button>
-      </div>
+       </button>
     </div>
   );
       

@@ -7,7 +7,9 @@ const InventoryList = () => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // จำนวนของต่อ 1 หน้านะจ้ะ
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -35,6 +37,11 @@ const InventoryList = () => {
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const currentItems = filteredItems.slice(indexOfFirstItem, Math.min(indexOfLastItem, filteredItems.length));
 
   return (
     <div className="container mt-4">
@@ -68,7 +75,7 @@ const InventoryList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredItems.map((item) => (
+              {currentItems.map((item) => (
                 <tr key={item.id}>
                   <td className="fs-4">
                     {item.picture ? (
@@ -76,10 +83,10 @@ const InventoryList = () => {
                         src={`http://localhost:8080/api/lost-items/${item.id}/image`} 
                         alt={item.name} 
                         style={{ width: '50px', height: '50px', objectFit: 'cover' }} 
-                        onError={(e) => e.target.style.display = "none"} // ซ่อนรูปถ้าลิงก์เสีย
+                        onError={(e) => e.target.style.display = "none"} 
                       />
                     ) : (
-                      "📷" // ถ้าไม่มีรูปให้แสดงอีโมจิรูปกล้อง
+                      "📷"
                     )}
                   </td>
                   <td>{item.category}</td>
@@ -101,12 +108,38 @@ const InventoryList = () => {
               ))}
             </tbody>
           </table>
-
-          <div className="d-flex justify-content-end mt-3">
+          
+         
+          <div className="d-flex justify-content-between align-items-center mt-3">
             <button onClick={() => navigate("/home")} className="btn btn-secondary">
-              ย้อนกลับ
+              กลับไปยังหน้าหลัก
             </button>
+
+
+            <nav>   {/* ปุ่มสำหรับเปลี่ยนหน้านะจ้ะ */}
+              <ul className="pagination mb-0">
+                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                    ก่อนหน้า
+                  </button>
+                </li>
+                {[...Array(totalPages)].map((_, index) => (
+                  <li key={index} className={`page-item ${currentPage === index + 1 ? "active" : ""}`}>
+                    <button className="page-link" onClick={() => setCurrentPage(index + 1)}>
+                      {index + 1}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                  <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                    ถัดไป
+                  </button>
+                </li>
+              </ul>
+            </nav>
           </div>
+
+
         </>
       )}
     </div>

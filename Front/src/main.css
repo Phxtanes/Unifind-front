@@ -13,8 +13,8 @@
   }
   
   .left-panel {
-    background-color: #2e2d88;
-    width: 70%;
+    background: linear-gradient(to right, #2F318B 40%, #ff6600 100%);
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -126,8 +126,8 @@
   .btn-primary.login {
     background-color: #2F318B;
     position: absolute;
-    bottom: 40px; 
-    right: 40px;  
+    bottom: 60px; 
+    right: 60px;  
   }
   
   
