@@ -31,7 +31,7 @@ const EditItemForm = () => {
         fetchImage();
       })
       .catch(error => console.error("Error fetching item data:", error));
-  }, [id]);
+  }, /* [id] */);
 
   const fetchImage = async () => {
     try {
@@ -80,7 +80,7 @@ const EditItemForm = () => {
   return (
     <div className="container mt-4">
       <div className="card shadow p-4">
-        <h2 className="text-center mb-3">แก้ไขข้อมูลของหาย</h2>
+        <h2 className="text-center mb-3">แก้ไขข้อมูลของหาย - <span className="text-danger">กำลังแก้ไข</span></h2>
         <hr />
 
         <div className="row mt-4">

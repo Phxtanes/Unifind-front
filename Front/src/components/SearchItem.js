@@ -67,9 +67,21 @@ const InventoryList = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="text-center mb-3">หน้ารายการสิ่งของ</h2>
+    <div className="container-fluid mt-4" >
+       <div className="d-flex align-items-center mt-3">
+            <button onClick={() => navigate("/home")} className="btn btn-secondary">
+              กลับไปยังหน้าหลัก
+            </button> 
+        </div>
 
+        <div className="container mb-4 text-center">
+          <div
+            className="bg-white shadow rounded d-inline-block px-4 py-2"
+            style={{ border: '1px solid #dee2e6', borderRadius:'50px' }}
+          >
+            <h1 className="mb-0 fs-4 px-3 py-1">หน้ารายการสิ่งของ</h1>
+          </div>
+        </div>
 
       {loading ? (
         <p className="text-center">กำลังโหลดข้อมูล...</p>
@@ -77,59 +89,77 @@ const InventoryList = () => {
         <p className="text-center text-danger">{error}</p>
       ) : (
         <>
-        <div className="d-flex justify-content-between align-items-center mt-3">
-            <button onClick={() => navigate("/home")} className="btn btn-secondary">
-              กลับไปยังหน้าหลัก
-            </button>
-          </div>
-          <table id="itemsTable" className="table table-bordered text-center">
-            <thead className="thead-dark">
-              <tr>
-                <th>รูปภาพ</th>
-                <th>ประเภท</th>
-                <th>ชื่อสิ่งของ</th>
-                <th>วันที่พบ</th>
-                <th>ล็อคเกอร์</th>
-                <th>สถานะ</th>
-                <th>แก้ไข</th>
-                <th>นำออก</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td className="fs-4">
-                    {item.picture ? (
-                      <img
-                        src={`http://localhost:8080/api/lost-items/${item.id}/image`}
-                        alt={item.name}
-                        style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-                        onError={(e) => e.target.style.display = "none"}
-                      />
-                    ) : (
-                      "📷"
-                    )}
-                  </td>
-                  <td>{item.category}</td>
-                  <td>{item.name}</td>
-                  <td>{formatThaiDate(item.date)}</td>
-                  <td>{item.locker}</td>
-                  <td>{item.status}</td>
-                  <td>
-                    <Link to={`/edit/${item.id}`} className="btn btn-warning btn-sm">
-                      📝
-                    </Link>
-                  </td>
-                  <td>
-                    <Link to={`/remove/${item.id}`} className="btn btn-danger btn-sm">
-                      📤
-                    </Link>
-                  </td>
+        <div className="d-flex justify-content-between align-items-center mt-3"></div>
+          <div className="table-responsive">
+            <table
+              id="itemsTable"
+              className="table table-bordered table-hover table-striped table-sm text-center shadow-sm"
+              style={{
+                border: '2px solid #dee2e6',
+                borderRadius: '12px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+              }}
+            >
+              <thead className="thead-dark">
+                <tr>
+                  <th className="text-center p-3">รูปภาพ</th>
+                  <th className="text-center p-3">ชื่อสิ่งของ</th>
+                  <th className="text-center p-3">ประเภท</th>
+                  <th className="text-center p-3">วันที่พบ</th>
+                  <th className="text-center p-3">ล็อคเกอร์</th>
+                  <th className="text-center p-3">สถานะ</th>
+                  <th className="text-center p-3">แก้ไข</th>
+                  <th className="text-center p-3">นำออก</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id} className="align-middle">
+                    <td className="fs-5 p-2">
+                      {item.picture ? (
+                        <img
+                          src={`http://localhost:8080/api/lost-items/${item.id}/image`}
+                          alt={item.name}
+                          style={{
+                            width: '100px',
+                            height: '100px',
+                            objectFit: 'cover',
+                            borderRadius: '10px',
+                            boxShadow: '0 0 5px rgba(0,0,0,0.2)',
+                          }}
+                          onError={(e) => (e.target.style.display = 'none')}
+                        />
+                      ) : (
+                        '📷'
+                      )}
+                    </td>
+                    <td className="text-center p-2">{item.name}</td>
+                    <td className="text-center p-2">{item.category}</td>
+                    <td className="text-center p-2">{formatThaiDate(item.date)}</td>
+                    <td className="text-center p-2">{item.locker}</td>
+                    <td className="text-center p-2">{item.status}</td>
+                    <td className="p-2">
+                      <Link
+                        to={`/edit/${item.id}`}
+                        className="btn btn-warning btn-md rounded-pill shadow-sm"
+                      >
+                        📝
+                      </Link>
+                    </td>
+                    <td className="p-2">
+                      <Link
+                        to={`/remove/${item.id}`}
+                        className="btn btn-danger btn-md rounded-pill shadow-sm"
+                      >
+                        📤
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 
