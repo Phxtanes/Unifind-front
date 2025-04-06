@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { QRCodeCanvas } from "qrcode.react";
 
 const LostItemForm = () => {
   const [item, setItem] = useState({
@@ -14,9 +15,11 @@ const LostItemForm = () => {
     status: "stored",
     identityDoc: "",
     receiver: "",
-    staffName: ""
+    staffName: "",
+    id_qr: ""
   });
 
+  const [qrUrl, setQrUrl] = useState("");
   const [file, setFile] = useState(null); //เพิ่ม state สำหรับเก็บรูป
 
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า", "อื่นๆ"];
@@ -26,22 +29,29 @@ const LostItemForm = () => {
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]); 
+    setFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-    
       const newItem = { ...item, date: new Date().toISOString() };
       const response = await axios.post("http://localhost:8080/api/lost-items", newItem);
       const lostItemId = response.data.id; // รับค่า ID ของของหายที่เพิ่มใหม่
+      console.log("Lost Item ID:", lostItemId);
 
-    
+      const url = `http://localhost:3000/remove/${lostItemId}`;
+      setQrUrl(url);
+      console.log("QR URL:", url);
+
+      await axios.put(`http://localhost:8080/api/lost-items/QR/${lostItemId}`, { id_qr: url });
+
+
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
+        console.log("Uploading image with formData:", formData);
 
         await axios.post(`http://localhost:8080/api/lost-items/${lostItemId}/upload-image`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
@@ -51,6 +61,7 @@ const LostItemForm = () => {
       } else {
         alert("เพิ่มของหายเรียบร้อย (ไม่มีรูปภาพ)");
       }
+
       setItem({
         name: "",
         category: "",
@@ -62,14 +73,16 @@ const LostItemForm = () => {
         status: "stored",
         identityDoc: "",
         receiver: "",
-        staffName: ""
+        staffName: "",
+        id_qr: ""
       });
       setFile(null);
     } catch (error) {
       console.error("Error:", error);
-      alert("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");  
+      alert("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
     }
   };
+
 
   return (
     <div className="container mt-4">
@@ -125,9 +138,21 @@ const LostItemForm = () => {
               <label className="form-label">ตู้เก็บ <span className="red-star">*</span></label>
               <input type="number" name="locker" value={item.locker} onChange={handleChange} className="form-control" />
             </div>
+            
             <div className="col-md-6 mb-3 text-center">
               <label className="form-label">คิวอาร์โค้ด</label>
-              <div className="border p-3 rounded bg-light"></div>
+              <div className="border p-3 rounded bg-light d-flex justify-content-center">
+                {qrUrl && (
+                  <QRCodeCanvas
+                    value={qrUrl}
+                    size={150}
+                    bgColor="#ffffff"
+                    fgColor="#000000"
+                    level="H"
+                    includeMargin
+                  />
+                )}
+              </div>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { QRCodeCanvas } from "qrcode.react";
 
 // สร้าง state เก็บข้อมูลของ
 const EditItemForm = () => {
@@ -16,24 +17,11 @@ const EditItemForm = () => {
     status: "",
     namereport: "",
   });
-
+  const [qrUrl, setQrUrl] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า"];
 
-  useEffect(() => {
-    // ดึงข้อมูลจาก API
-    axios.get(`http://localhost:8080/api/lost-items/${id}`)
-      .then(response => {
-        const data = response.data;
-        const formattedDate = data.date ? data.date.split("T")[0] : "";
-        setItem({ ...data, date: formattedDate });
-        console.log("Data Fetched:", data);
-        fetchImage();
-      })
-      .catch(error => console.error("Error fetching item data:", error));
-  }, /* [id] */);
-
-  const fetchImage = async () => {
+  const fetchImage = useCallback(async () => {
     try {
       const response = await axios.get(`http://localhost:8080/api/lost-items/${id}/image`, {
         responseType: "blob",
@@ -44,7 +32,21 @@ const EditItemForm = () => {
     } catch (error) {
       console.error("Error fetching image:", error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    // ดึงข้อมูลจาก API
+    axios.get(`http://localhost:8080/api/lost-items/${id}`)
+      .then(response => {
+        const data = response.data;
+        const formattedDate = data.date ? data.date.split("T")[0] : "";
+        setItem({ ...data, date: formattedDate });
+        setQrUrl(`http://localhost:3000/remove/${id}`);
+        console.log("Data Fetched:", data);
+        fetchImage();
+      })
+      .catch(error => console.error("Error fetching item data:", error));
+  }, [id, fetchImage]);
 
   const handleChange = (e) => {
     setItem({ ...item, [e.target.name]: e.target.value });
@@ -141,7 +143,21 @@ const EditItemForm = () => {
                 <label className="form-label">รายละเอียด <span className="text-danger">*</span></label>
                 <textarea name="description" value={item.description} onChange={handleChange} required className="form-control" style={{ resize: 'none' }} />
               </div>
-
+              <div className="col-md-12 mb-3 text-center">
+                <label className="form-label">คิวอาร์โค้ด</label>
+                <div className="border p-3 rounded bg-light d-flex justify-content-center">
+                  {qrUrl && (
+                    <QRCodeCanvas
+                      value={qrUrl}
+                      size={150}
+                      bgColor="#ffffff"
+                      fgColor="#000000"
+                      level="H"
+                      includeMargin
+                    />
+                  )}
+                </div>
+              </div>
               <div className="d-flex justify-content-end gap-2">
                 <button type="button" className="btn btn-secondary" onClick={() => navigate("/inventory")}>ยกเลิก</button>
                 <button type="submit" className="btn btn-warning">อัปเดต</button>

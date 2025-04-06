@@ -54,7 +54,7 @@ const InventoryList = () => {
       }, 500);
     }
   }, [loading, error, items]);
-  
+
 
 
   const formatThaiDate = (dateString) => {
@@ -68,20 +68,20 @@ const InventoryList = () => {
 
   return (
     <div className="container-fluid mt-4" >
-       <div className="d-flex align-items-center mt-3">
-            <button onClick={() => navigate("/home")} className="btn btn-secondary">
-              กลับไปยังหน้าหลัก
-            </button> 
-        </div>
+      <div className="d-flex align-items-center mt-3">
+        <button onClick={() => navigate("/home")} className="btn btn-secondary">
+          กลับไปยังหน้าหลัก
+        </button>
+      </div>
 
-        <div className="container mb-4 text-center">
-          <div
-            className="bg-white shadow rounded d-inline-block px-4 py-2"
-            style={{ border: '1px solid #dee2e6', borderRadius:'50px' }}
-          >
-            <h1 className="mb-0 fs-4 px-3 py-1">หน้ารายการสิ่งของ</h1>
-          </div>
+      <div className="container mb-4 text-center">
+        <div
+          className="bg-white shadow rounded d-inline-block px-4 py-2"
+          style={{ border: '1px solid #dee2e6', borderRadius: '50px' }}
+        >
+          <h1 className="mb-0 fs-4 px-3 py-1">หน้ารายการสิ่งของ</h1>
         </div>
+      </div>
 
       {loading ? (
         <p className="text-center">กำลังโหลดข้อมูล...</p>
@@ -89,7 +89,7 @@ const InventoryList = () => {
         <p className="text-center text-danger">{error}</p>
       ) : (
         <>
-        <div className="d-flex justify-content-between align-items-center mt-3"></div>
+          <div className="d-flex justify-content-between align-items-center mt-3"></div>
           <div className="table-responsive">
             <table
               id="itemsTable"
