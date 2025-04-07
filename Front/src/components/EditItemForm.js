@@ -28,9 +28,9 @@ const EditItemForm = () => {
       });
       const imageUrl = URL.createObjectURL(response.data);
       setImageUrl(imageUrl);
-      console.log("Image Loaded:", imageUrl);
+      //console.log("Image Loaded:", imageUrl);
     } catch (error) {
-      console.error("Error fetching image:", error);
+      //console.error("Error fetching image:", error);
     }
   }, [id]);
 
@@ -42,7 +42,7 @@ const EditItemForm = () => {
         const formattedDate = data.date ? data.date.split("T")[0] : "";
         setItem({ ...data, date: formattedDate });
         setQrUrl(`http://localhost:3000/remove/${id}`);
-        console.log("Data Fetched:", data);
+        //console.log("Data Fetched:", data);
         fetchImage();
       })
       .catch(error => console.error("Error fetching item data:", error));
@@ -74,7 +74,7 @@ const EditItemForm = () => {
       alert("อัปเดตข้อมูลสำเร็จ!");
       navigate("/inventory");
     } catch (error) {
-      console.error("Error updating item:", error.response ? error.response.data : error);
+      //console.error("Error updating item:", error.response ? error.response.data : error);
       alert("เกิดข้อผิดพลาด ไม่สามารถอัปเดตข้อมูลได้");
     }
   };
