@@ -136,48 +136,25 @@ const Removepage = () => {
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">ชื่อผู้มารับของ <span className="red-star">*</span></label>
-              <input
-                type="text"
-                name="receiver"
-                required
-                value={item.receiver}
-                onChange={handleChange}
-                className="form-control"
+              <input type="text" name="receiver" required value={item.receiver} onChange={handleChange} className="form-control"
               />
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">เอกสารยืนยันตัวตน <span className="red-star">*</span></label>
-              <input
-                type="file"
-                name="identityDoc"
-                required
-                onChange={handleFileChange}
-                className="form-control"
-              />
+              <input type="file" name="identityDoc" required onChange={handleFileChange} className="form-control"/>
             </div>
           </div>
 
           <div className="row">
             <div className="col-md-6 mb-3">
               <label className="form-label">ชื่อเจ้าหน้าที่นำของออก <span className="red-star">*</span></label>
-              <input
-                type="text"
-                name="staffName"
-                required
-                value={item.staffName}
-                onChange={handleChange}
-                className="form-control"
-              />
+              <input type="text" name="staffName" required value={item.staffName} onChange={handleChange} className="form-control"/>
             </div>
           </div>
 
           <div className="d-flex justify-content-end gap-2">
-            <button type="button" className="btn btn-secondary" onClick={() => navigate("/inventory")}>
-              ยกเลิก
-            </button>
-            <button type="submit" className="btn btn-danger">
-              นำของออก
-            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => navigate("/inventory")}>ยกเลิก</button>
+            <button type="submit" className="btn btn-danger">นำของออก</button>
           </div>
         </form>
       </div>
