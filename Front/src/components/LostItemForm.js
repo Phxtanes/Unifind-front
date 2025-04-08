@@ -58,8 +58,7 @@ const LostItemForm = () => {
         formData.append("file", file);
         console.log("Uploading image with formData:", formData);
 
-        const uploadRes = await axios.post(
-          `http://localhost:8080/api/lost-items/${lostItemId}/upload-image`,formData,{
+        await axios.post(`http://localhost:8080/api/lost-items/${lostItemId}/upload-image`,formData,{
         headers: { "Content-Type": "multipart/form-data" },
           });
         alert("เพิ่มของหายและอัปโหลดรูปภาพเรียบร้อย!");
