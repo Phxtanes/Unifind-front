@@ -16,20 +16,26 @@ const LostItemForm = () => {
     identityDoc: "",
     receiver: "",
     staffName: "",
-    id_qr: ""
+    id_qr: "",
   });
 
   const [qrUrl, setQrUrl] = useState("");
-  const [file, setFile] = useState(null); //เพิ่ม state สำหรับเก็บรูป
-
-  const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา", "นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู", "เสื้อ", "หมวก", "รองเท้า", "อื่นๆ"];
+  const [file, setFile] = useState(null); 
+  const [imageUrl, setImageUrl] = useState(""); 
+  const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา","นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู","เสื้อ", "หมวก", "รองเท้า", "อื่นๆ"];
 
   const handleChange = (e) => {
     setItem({ ...item, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    if (selectedFile) {
+      const previewUrl = URL.createObjectURL(selectedFile);
+      setImageUrl(previewUrl);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -38,7 +44,7 @@ const LostItemForm = () => {
     try {
       const newItem = { ...item, date: new Date().toISOString() };
       const response = await axios.post("http://localhost:8080/api/lost-items", newItem);
-      const lostItemId = response.data.id; // รับค่า ID ของของหายที่เพิ่มใหม่
+      const lostItemId = response.data.id;
       console.log("Lost Item ID:", lostItemId);
 
       const url = `http://localhost:3000/remove/${lostItemId}`;
@@ -47,21 +53,21 @@ const LostItemForm = () => {
 
       await axios.put(`http://localhost:8080/api/lost-items/QR/${lostItemId}`, { id_qr: url });
 
-
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
         console.log("Uploading image with formData:", formData);
 
-        await axios.post(`http://localhost:8080/api/lost-items/${lostItemId}/upload-image`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
+        const uploadRes = await axios.post(
+          `http://localhost:8080/api/lost-items/${lostItemId}/upload-image`,formData,{
+        headers: { "Content-Type": "multipart/form-data" },
+          });
         alert("เพิ่มของหายและอัปโหลดรูปภาพเรียบร้อย!");
       } else {
         alert("เพิ่มของหายเรียบร้อย (ไม่มีรูปภาพ)");
       }
 
+      // Reset form
       setItem({
         name: "",
         category: "",
@@ -77,12 +83,13 @@ const LostItemForm = () => {
         id_qr: ""
       });
       setFile(null);
+      setImageUrl(""); 
+      setQrUrl(""); 
     } catch (error) {
       console.error("Error:", error);
       alert("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
     }
   };
-
 
   return (
     <div className="container mt-4">
@@ -126,6 +133,12 @@ const LostItemForm = () => {
             <div className="col-md-6 mb-3">
               <label className="form-label">รูปภาพ <span className="red-star">*</span></label>
               <input type="file" className="form-control" onChange={handleFileChange} />
+              {/* Preview รูป */}
+              {imageUrl && (
+                <div className="mt-3 text-center">
+                  <img src={imageUrl} alt="Preview" className="img-thumbnail" style={{ maxHeight: "200px" }} />
+                </div>
+              )}
             </div>
             <div className="col-md-6 mb-3">
               <label className="form-label">ระบุชื่อผู้รับแจ้งทรัพย์สินสูญหาย <span className="red-star">*</span></label>
@@ -138,7 +151,7 @@ const LostItemForm = () => {
               <label className="form-label">ตู้เก็บ <span className="red-star">*</span></label>
               <input type="number" name="locker" value={item.locker} onChange={handleChange} className="form-control" />
             </div>
-            
+
             <div className="col-md-6 mb-3 text-center">
               <label className="form-label">คิวอาร์โค้ด</label>
               <div className="border p-3 rounded bg-light d-flex justify-content-center">
