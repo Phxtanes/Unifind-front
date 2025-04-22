@@ -62,36 +62,20 @@ public class LostItemController {
     {
 
         if (date != null) {
-            try {
                 LocalDate localDate = LocalDate.parse(date.trim());
                 LocalDateTime start = localDate.atStartOfDay();
                 LocalDateTime end = localDate.plusDays(1).atStartOfDay();
-
-                System.out.println("Parsed Start: " + start);
-                System.out.println("Parsed End: " + end);
-
                 if (locker != null) {
-                    System.out.println("Querying with status + date range + locker");
                     return repository.findByStatusAndDateBetweenAndLocker("stored", start, end, locker);
                 }
-
-                System.out.println("Querying with status + date range");
                 return repository.findByStatusAndDateBetween("stored", start, end);
-            } catch (Exception e) {
-                System.out.println("Failed to parse date: " + e.getMessage());
-            }
         }
 
         if (locker != null) {
-            System.out.println("Querying with status + locker");
             return repository.findByStatusAndLocker("stored", locker);
         }
-
-        System.out.println("Querying with only status");
         return repository.findByStatus("stored");
     }
-
-
 
 
     // 🔹 อัปเดตสถานะของหายเป็น "removed"
