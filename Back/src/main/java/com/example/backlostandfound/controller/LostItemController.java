@@ -56,13 +56,29 @@ public class LostItemController {
     }
 
     // 🔹 อัปเดตสถานะของหายเป็น "removed"
-    @PutMapping("/status/{id}")
-    public LostItem updateLostItemStatus(@PathVariable String id, @RequestBody LostItem updatedData) {
-        LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
-        item.setIdentityDoc(updatedData.getIdentityDoc());
-        item.setReceiver(updatedData.getReceiver());
-        item.setStaffName(updatedData.getStaffName());
+    @PutMapping(value = "/status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public LostItem updateLostItemStatusWithFile(
+            @PathVariable String id,
+            @RequestPart("receiver") String receiver,
+            @RequestPart("staffName") String staffName,
+            @RequestPart(value = "identityDoc", required = false) MultipartFile identityDoc) {
+
+        LostItem item = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lost item not found"));
+
+        item.setReceiver(receiver);
+        item.setStaffName(staffName);
         item.setStatus("removed");
+
+        // ✅ ถ้ามีไฟล์แนบ ให้ upload ไป GridFS
+        if (identityDoc != null && !identityDoc.isEmpty()) {
+            try {
+                String fileId = gridFsService.uploadFile(identityDoc);
+                item.setIdentityDoc(fileId); // บันทึก File ID ลงในฟิลด์
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to upload identity document", e);
+            }
+        }
 
         return repository.save(item);
     }
@@ -90,7 +106,7 @@ public class LostItemController {
     }
 
     // 🔹 API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
-    @PostMapping("/{id}/upload-image")
+    @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
             String fileId = gridFsService.uploadFile(file); // ✅ อัปโหลดไฟล์ไป GridFS
