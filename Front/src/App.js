@@ -7,6 +7,7 @@ import Lostitemfrom from "./components/LostItemForm";
 import InventoryList from "./components/SearchItem";
 import EditItemForm from "./components/EditItemForm";
 import Removepage from "./components/Removepage";
+import RemovedItemsList from './components/RemovedItemsList';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/inventory" element={<InventoryList/>} />
         <Route path="/edit/:id" element={<EditItemForm />} />
         <Route path="/remove/:id" element={<Removepage/>} />
+        <Route path="/removed" element={<RemovedItemsList />} />
       </Routes>
     </Router>
   );

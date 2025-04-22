@@ -68,9 +68,13 @@ const InventoryList = () => {
 
   return (
     <div className="container-fluid mt-4" >
-      <div className="d-flex align-items-center mt-3">
+      <div className="d-flex justify-content-between align-items-center mt-3">
         <button onClick={() => navigate("/home")} className="btn btn-secondary">
           กลับไปยังหน้าหลัก
+        </button>
+        
+        <button onClick={() => navigate("/removed")} className="btn btn-secondary btn-danger">
+          ถังขยะ
         </button>
       </div>
 
