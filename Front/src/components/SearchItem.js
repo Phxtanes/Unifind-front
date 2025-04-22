@@ -5,6 +5,7 @@ import $ from "jquery";
 import "datatables.net";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
+import { Button } from "bootstrap";
 
 
 const InventoryList = () => {
@@ -13,11 +14,21 @@ const InventoryList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedLocker, setSelectedLocker] = useState("");
 
   const fetchItems = () => {
     setLoading(true);
+    const params = {};
+
+    if (selectedDate) {
+      params.date = selectedDate;
+    }
+    if (selectedLocker) {
+      params.locker = selectedLocker;
+    }
     axios
-      .get("http://localhost:8080/api/lost-items/status/stored")
+      .get("http://localhost:8080/api/lost-items/status/stored", { params })
       .then((response) => {
         setItems(response.data);
         setLoading(false);
@@ -31,7 +42,7 @@ const InventoryList = () => {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [selectedDate, selectedLocker]);
 
   useEffect(() => {
     if (location.state && location.state.updated) {
@@ -63,7 +74,7 @@ const InventoryList = () => {
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear() + 543;
-    return `${day}/${month}/${year}`;
+    return `${day}-${month}-${year}`;
   };
 
   return (
@@ -72,7 +83,7 @@ const InventoryList = () => {
         <button onClick={() => navigate("/home")} className="btn btn-secondary">
           กลับไปยังหน้าหลัก
         </button>
-        
+
         <button onClick={() => navigate("/removed")} className="btn btn-secondary btn-danger">
           ถังขยะ
         </button>
@@ -94,6 +105,33 @@ const InventoryList = () => {
       ) : (
         <>
           <div className="d-flex justify-content-between align-items-center mt-3"></div>
+          <div className="d-flex align-items-center mt-3 mb-3 justify-content-end">
+            <div className="me-3">
+              <select
+                value={selectedLocker}
+                onChange={(e) => setSelectedLocker(e.target.value)}
+                className="form-select"
+              >
+                <option value="">Locker</option>
+                <option value="1"> 1</option>
+                <option value="2"> 2</option>
+                <option value="3"> 3</option>
+                <option value="4"> 4</option>
+                <option value="5"> 5</option>
+                <option value="6"> 6</option>
+              </select>
+            </div>
+
+            <div>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="form-control"
+              />
+            </div>
+          </div>
+
           <div className="table-responsive">
             <table
               id="itemsTable"

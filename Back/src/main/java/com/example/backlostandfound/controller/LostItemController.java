@@ -10,7 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @RestController
@@ -51,9 +56,43 @@ public class LostItemController {
 
     // 🔹 ดึงของหายตามสถานะ "stored"
     @GetMapping("/status/stored")
-    public List<LostItem> getLostItemsByStored() {
+    public List<LostItem> getLostItemsByStored(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Integer locker)
+    {
+
+        if (date != null) {
+            try {
+                LocalDate localDate = LocalDate.parse(date.trim());
+                LocalDateTime start = localDate.atStartOfDay();
+                LocalDateTime end = localDate.plusDays(1).atStartOfDay();
+
+                System.out.println("Parsed Start: " + start);
+                System.out.println("Parsed End: " + end);
+
+                if (locker != null) {
+                    System.out.println("Querying with status + date range + locker");
+                    return repository.findByStatusAndDateBetweenAndLocker("stored", start, end, locker);
+                }
+
+                System.out.println("Querying with status + date range");
+                return repository.findByStatusAndDateBetween("stored", start, end);
+            } catch (Exception e) {
+                System.out.println("Failed to parse date: " + e.getMessage());
+            }
+        }
+
+        if (locker != null) {
+            System.out.println("Querying with status + locker");
+            return repository.findByStatusAndLocker("stored", locker);
+        }
+
+        System.out.println("Querying with only status");
         return repository.findByStatus("stored");
     }
+
+
+
 
     // 🔹 อัปเดตสถานะของหายเป็น "removed"
     @PutMapping(value = "/status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
