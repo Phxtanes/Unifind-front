@@ -203,3 +203,7 @@
     }
   }
   
+  .nav-link:hover {
+    background-color: #9C9C9C;
+    color: white;
+  }

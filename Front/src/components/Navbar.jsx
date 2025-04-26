@@ -57,21 +57,23 @@ function Navbar() {
         >
           <div className="mb-auto">
             <ul className="nav flex-column">
-              <li className="nav-item">
-                <a className="nav-link active" href="#">
-                  เมนูที่ 1
+              <li className="nav-item border-bottom">
+                <a className="nav-link active" href="/lostitemfrom">
+                🔽 บันทึกของหาย
                 </a>
               </li>
-              <li className="nav-item">
+              <li className="nav-item border-bottom">
+                <a className="nav-link" href="/inventory">
+                📋 หน้ารายการสิ่งของ
+                </a>
+              </li>
+              <li className="nav-item border-bottom">
                 <a className="nav-link" href="#">
-                  เมนูที่ 2
+                Coming soon...
                 </a>
               </li>
-            
-
-
             </ul>
-          </div>
+</div>
 
           <div>
 
