@@ -16,7 +16,7 @@
     const fetchItems = () => {
       setLoading(true);
       axios
-        .get("http://localhost:8080/api/lost-items/status/removed") // ✅ ใช้ status removed
+        .get("http://localhost:8080/api/lost-items/status/removed")
         .then((response) => {
           setItems(response.data);
           setLoading(false);
@@ -65,11 +65,6 @@
 
     return (
       <div className="container-fluid mt-4">
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <button onClick={() => navigate("/inventory")} className="btn btn-secondary">
-            กลับไปยังรายการสิ่งของ
-          </button>
-        </div>
 
         <div className="container mb-4 text-center">
           <div

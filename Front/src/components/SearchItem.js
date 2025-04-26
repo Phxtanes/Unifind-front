@@ -80,16 +80,10 @@ const InventoryList = () => {
   return (
     <div className="container-fluid mt-4" >
       <div className="d-flex justify-content-between align-items-center mt-3">
-        <button onClick={() => navigate("/home")} className="btn btn-secondary">
-          กลับไปยังหน้าหลัก
-        </button>
 
-        <button onClick={() => navigate("/removed")} className="btn btn-secondary btn-danger">
-          ถังขยะ
-        </button>
       </div>
 
-      <div className="container mb-4 text-center">
+      <div className="container text-center">
         <div
           className="bg-white shadow rounded d-inline-block px-4 py-2"
           style={{ border: '1px solid #dee2e6', borderRadius: '50px' }}
@@ -105,7 +99,7 @@ const InventoryList = () => {
       ) : (
         <>
           <div className="d-flex justify-content-between align-items-center mt-3"></div>
-          <div className="d-flex align-items-center mt-3 mb-3 justify-content-end">
+          <div className="d-flex align-items-center mb-3 justify-content-end">
             <div className="me-3">
               <select
                 value={selectedLocker}
@@ -133,7 +127,9 @@ const InventoryList = () => {
           </div>
 
           <div className="table-responsive">
+            
             <table
+            
               id="itemsTable"
               className="table table-bordered table-hover table-striped table-sm text-center shadow-sm"
               style={{
@@ -143,6 +139,7 @@ const InventoryList = () => {
                 boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
               }}
             >
+              
               <thead className="thead-dark">
                 <tr>
                   <th className="text-center p-3">รูปภาพ</th>
