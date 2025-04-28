@@ -128,6 +128,15 @@ public class LostItemController {
         return repository.save(item);
     }
 
+    // 🔹 เปลี่ยนสถานะของรายการสิ่งของที่ถูกนำออกเป็น "deleted"
+    @PutMapping("/status/deleted/{id}")
+    public LostItem deleteLostItem(@PathVariable String id) {
+        LostItem item = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lost item not found"));
+        item.setStatus("deleted");
+        return repository.save(item);
+    }
+
     // 🔹 API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
     @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
