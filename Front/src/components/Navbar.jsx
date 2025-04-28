@@ -52,28 +52,38 @@ function Navbar() {
             left: 0,
             height: "calc(100vh - 56px)",
             zIndex: 9999,
-            backgroundColor: "white"
+            backgroundColor: "white",
           }}
         >
           <div className="mb-auto">
             <ul className="nav flex-column">
               <li className="nav-item border-bottom">
-                <a className="nav-link active" href="/lostitemfrom">
-                🔽 บันทึกของหาย
+                <a className="nav-link active menu-item" style={{color:"#000"}} href="#">
+                  Dashboard
                 </a>
               </li>
               <li className="nav-item border-bottom">
-                <a className="nav-link" href="/inventory">
-                📋 หน้ารายการสิ่งของ
+                <a className="nav-link active menu-item" style={{color:"#000"}} href="/lostitemfrom">
+                  Add Item
                 </a>
               </li>
               <li className="nav-item border-bottom">
-                <a className="nav-link" href="#">
-                Coming soon...
+                <a className="nav-link menu-item" style={{color:"#000"}} href="/inventory">
+                  Inventory
+                </a>
+              </li>
+              <li className="nav-item border-bottom">
+                <a className="nav-link menu-item" style={{color:"#000"}} href="#">
+                  Settings
+                </a>
+              </li>
+              <li className="nav-item border-bottom">
+                <a className="nav-link menu-item" style={{color:"#000"}} href="#">
+                  Contact
                 </a>
               </li>
             </ul>
-</div>
+          </div>
 
           <div>
 
