@@ -39,4 +39,13 @@ public class GridFsService {
         gridFSBucket.downloadToStream(new ObjectId(id), outputStream);
         return outputStream.toByteArray();
     }
+
+    // ✅ ลบไฟล์จาก MongoDB GridFS ตาม ID
+    public void deleteFile(String fileId) throws IOException {
+        if (fileId != null) {
+            ObjectId objectId = new ObjectId(fileId); // เปลี่ยนเป็น ObjectId
+            gridFSBucket.delete(objectId); // ลบไฟล์จาก GridFS
+        }
+    }
 }
+

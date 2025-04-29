@@ -13,11 +13,22 @@ const RemovedItemsList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedLocker, setSelectedLocker] = useState("");
 
   const fetchItems = () => {
     setLoading(true);
+    const params = {};
+
+    if (selectedDate) {
+      params.date = selectedDate;
+    }
+    if (selectedLocker) {
+      params.locker = selectedLocker;
+    }
+
     axios
-      .get("http://localhost:8080/api/lost-items/status/removed")
+      .get("http://localhost:8080/api/lost-items/status/removed", { params })
       .then((response) => {
         setItems(response.data);
         setLoading(false);
@@ -31,7 +42,7 @@ const RemovedItemsList = () => {
 
   useEffect(() => {
     fetchItems();
-  }, []);
+  }, [selectedDate, selectedLocker]);
 
   useEffect(() => {
     if (location.state && location.state.updated) {
@@ -80,9 +91,9 @@ const RemovedItemsList = () => {
     if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบสิ่งของที่เลือก?")) {
       Promise.all(
         selectedItems.map((id) =>
-          axios.put(`http://localhost:8080/api/lost-items/status/deleted/${id}`, {},
-            { headers: { "Content-Type": "application/json" } }
-          )
+          axios.delete(`http://localhost:8080/api/lost-items/delete/${id}`, {  // เพิ่ม /api/lost-items
+            headers: { "Content-Type": "application/json" }
+          })
         )
       )
       .then(() => {
@@ -91,13 +102,15 @@ const RemovedItemsList = () => {
         );
         setSelectedItems([]);
         alert("ลบออกจากถังขยะสำเร็จแล้ว");
+        fetchItems();
       })
       .catch((err) => {
         console.error("เกิดข้อผิดพลาดในการลบ:", err);
         alert("เกิดข้อผิดพลาด ไม่สามารถลบได้");
       });
     }
-  };  
+  };
+  
   const formatThaiDate = (dateString) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
@@ -127,6 +140,34 @@ const RemovedItemsList = () => {
       ) : error ? (
         <p className="text-center text-danger">{error}</p>
       ) : (
+        <>
+        <div className="d-flex justify-content-between align-items-center mt-3"></div>
+          <div className="d-flex align-items-center mb-3 justify-content-end">
+            <div className="me-3">
+              <select
+                value={selectedLocker}
+                onChange={(e) => setSelectedLocker(e.target.value)}
+                className="form-select"
+              >
+                <option value="">Locker</option>
+                <option value="1"> 1</option>
+                <option value="2"> 2</option>
+                <option value="3"> 3</option>
+                <option value="4"> 4</option>
+                <option value="5"> 5</option>
+                <option value="6"> 6</option>
+              </select>
+            </div>
+
+            <div>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="form-control"
+              />
+            </div>
+          </div>
         <div className="table-responsive">
           <table
             id="itemsTable"
@@ -202,6 +243,7 @@ const RemovedItemsList = () => {
             </button>
           </div>
         </div>
+        </>
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import com.example.backlostandfound.repository.LostItemRepository;
 import com.example.backlostandfound.service.GridFsService; // ✅ Import GridFsService
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,8 +51,25 @@ public class LostItemController {
 
     // 🔹 ดึงของหายตามสถานะ "removed"
     @GetMapping("/status/removed")
-    public List<LostItem> getLostItemsByRemoved() {
-        return repository.findByStatus("removed");
+    public List<LostItem> getLostItemsByRemoved(
+            @RequestParam(required = false) String date,
+            @RequestParam(required = false) Integer locker)
+        {
+
+            if (date != null) {
+                LocalDate localDate = LocalDate.parse(date.trim());
+                LocalDateTime start = localDate.atStartOfDay();
+                LocalDateTime end = localDate.plusDays(1).atStartOfDay();
+                if (locker != null) {
+                    return repository.findByStatusAndDateBetweenAndLocker("removed", start, end, locker);
+                }
+                return repository.findByStatusAndDateBetween("removed", start, end);
+            }
+
+            if (locker != null) {
+                return repository.findByStatusAndLocker("removed", locker);
+            }
+            return repository.findByStatus("removed");
     }
 
     // 🔹 ดึงของหายตามสถานะ "stored"
@@ -76,7 +94,6 @@ public class LostItemController {
         }
         return repository.findByStatus("stored");
     }
-
 
     // 🔹 อัปเดตสถานะของหายเป็น "removed"
     @PutMapping(value = "/status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -128,14 +145,35 @@ public class LostItemController {
         return repository.save(item);
     }
 
-    // 🔹 เปลี่ยนสถานะของรายการสิ่งของที่ถูกนำออกเป็น "deleted"
-    @PutMapping("/status/deleted/{id}")
-    public LostItem deleteLostItem(@PathVariable String id) {
+    // 🔹 ลบออกจาก DB
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLostItem(@PathVariable String id) {
         LostItem item = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lost item not found"));
-        item.setStatus("deleted");
-        return repository.save(item);
+
+        // ตรวจสอบและลบไฟล์จาก GridFS ถ้ามีไฟล์ที่เกี่ยวข้อง
+        if (item.getPicture() != null&& !item.getPicture().isEmpty()) {
+            try {
+                gridFsService.deleteFile(item.getPicture()); // ลบไฟล์รูปภาพจาก GridFS
+            } catch (IOException e) {
+                throw new RuntimeException("ลบไฟล์ใน GridFS ล้มเหลว", e);
+            }
+        }
+
+        if (item.getIdentityDoc() != null && !item.getIdentityDoc().isEmpty()) {
+            try {
+                gridFsService.deleteFile(item.getIdentityDoc()); // ลบไฟล์เอกสารประจำตัวจาก GridFS
+            } catch (IOException e) {
+                throw new RuntimeException("ลบไฟล์เอกสารประจำตัวใน GridFS ล้มเหลว", e);
+            }
+        }
+
+        // ลบข้อมูล LostItem จากฐานข้อมูล
+        repository.delete(item);
     }
+
+
 
     // 🔹 API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
     @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
