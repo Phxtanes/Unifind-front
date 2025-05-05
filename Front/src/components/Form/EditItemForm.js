@@ -135,7 +135,7 @@ const EditItemForm = () => {
                 </div>
                 <div className="col-md-6 mb-3">
                   <label className="form-label">สถานะ <span className="text-danger">*</span></label>
-                  <input type="text" name="status" value={item.status} onChange={handleChange} required className="form-control" />
+                  <input type="text" name="status" value={item.status} className="form-control" />
                 </div>
               </div>
 

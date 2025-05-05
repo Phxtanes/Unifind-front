@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import $ from "jquery";
 import "datatables.net";
@@ -121,18 +122,11 @@ const RemovedItemsList = () => {
   };
 
   return (
-    <div className="container-fluid mt-4">
-      <div className="container mb-4 text-center">
-        <div
-          className="shadow rounded d-inline-block px-4 py-2"
-          style={{
-            border: "1px solid #dee2e6",
-            borderRadius: "50px",
-            backgroundColor: "#FF5858",
-          }}
-        >
-          <h1 className="mb-0 fs-4 px-3 py-1">รายการสิ่งของที่ถูกนำออก</h1>
-        </div>
+    <div className="container-fluid mt-4"style={{borderRadius: '10px',boxShadow: '0 0 5px rgba(0,0,0,0.2)'}}>
+      <div className="container text-center pt-4 ">
+
+          <h1 className="mb-0 fs-4 px-3 py-1 ">รายการสิ่งของที่ถูกนำออก</h1>
+          <hr></hr>
       </div>
 
       {loading ? (
@@ -194,6 +188,7 @@ const RemovedItemsList = () => {
                 <th className="text-center p-3">วันที่พบ</th>
                 <th className="text-center p-3">ล็อคเกอร์</th>
                 <th className="text-center p-3">สถานะ</th>
+                <th className="text-center p-3">รายละเอียด</th>
               </tr>
             </thead>
 
@@ -232,12 +227,20 @@ const RemovedItemsList = () => {
                   <td className="text-center p-2" style={{ color: "#FF0000" }}>
                     {item.status}
                   </td>
+                    <td className="p-2">
+                      <Link
+                        to={`/bin/${item.id}`}
+                        className="btn btn-danger btn-md rounded-pill shadow-sm"
+                      >
+                        รายละเอียด
+                      </Link>
+                    </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div className="d-flex align-items-center mt-3 ml-3">
+          <div className="d-flex align-items-center mt-3 ml-3 mb-3">
             <button onClick={handleDeleteSelected} className="btn btn-danger">
               ลบออกจากถังขยะ
             </button>

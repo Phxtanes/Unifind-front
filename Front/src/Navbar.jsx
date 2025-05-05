@@ -58,7 +58,7 @@ function Navbar() {
           <div className="mb-auto">
             <ul className="nav flex-column">
               <li className="nav-item border-bottom">
-                <a className="nav-link active menu-item" style={{color:"#000"}} href="#">
+                <a className="nav-link active menu-item" style={{color:"#000"}} href="/dashboard">
                   Dashboard
                 </a>
               </li>

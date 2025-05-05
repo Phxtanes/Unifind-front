@@ -8,7 +8,7 @@ function Main() {
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    navigate("/home");
+    navigate("/Dashboard");
   };
 
   return (
@@ -35,11 +35,11 @@ function Main() {
           </div>
           <div className="contact-item">
             <div className="contact-icon">📱</div>
-            <div className="contact-text">facebook.com/utccstudentwelfare</div>
+            <a className="contact-text" href="https://facebook.com/utccstudentwelfare" target="_blank" rel="noopener noreferrer" >facebook.com/utccstudentwelfare</a>
           </div>
           <div className="contact-item">
             <div className="contact-icon">🌐</div>
-            <div className="contact-text">http://department.utcc.ac.th/utccswd</div>
+            <a className="contact-text" href="http://department.utcc.ac.th/utccswd" target="_blank" rel="noopener noreferrer">http://department.utcc.ac.th/utccswd</a>
           </div>
         </div>
       </div>

@@ -5,7 +5,6 @@ import $ from "jquery";
 import "datatables.net";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
-import { Button } from "bootstrap";
 
 
 const InventoryList = () => {
@@ -78,18 +77,14 @@ const InventoryList = () => {
   };
 
   return (
-    <div className="container-fluid mt-4" >
+    <div className="container-fluid mt-4" style={{borderRadius: '10px',boxShadow: '0 0 5px rgba(0,0,0,0.2)', }}>
       <div className="d-flex justify-content-between align-items-center mt-3">
 
       </div>
 
-      <div className="container text-center">
-        <div
-          className="bg-white shadow rounded d-inline-block px-4 py-2"
-          style={{ border: '1px solid #dee2e6', borderRadius: '50px' }}
-        >
+      <div className="container text-center mt-4">
           <h1 className="mb-0 fs-4 px-3 py-1">หน้ารายการสิ่งของ</h1>
-        </div>
+          <hr></hr>
       </div>
 
       {loading ? (
