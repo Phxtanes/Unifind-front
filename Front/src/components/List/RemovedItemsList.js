@@ -57,6 +57,7 @@ const RemovedItemsList = () => {
       setTimeout(() => {
         if ($.fn.DataTable.isDataTable("#itemsTable")) {
           $("#itemsTable").DataTable().destroy();
+          fetchItems();
         }
         $("#itemsTable").DataTable({
           columnDefs: [
