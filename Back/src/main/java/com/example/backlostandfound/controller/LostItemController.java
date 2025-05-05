@@ -207,4 +207,24 @@ public class LostItemController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    @GetMapping("/{id}/identityDoc")
+    public ResponseEntity<byte[]> getIdentityDoc(@PathVariable String id) {
+        LostItem item = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lost item not found"));
+
+        if (item.getIdentityDoc() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            byte[] fileData = gridFsService.getFile(item.getIdentityDoc());
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + item.getIdentityDoc() + "\"")
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(fileData);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

@@ -19,7 +19,7 @@ function Main() {
             <div className="logo-white-box"></div>
             <div className="logo-orange-box"></div>
           </div>
-  
+
           <div className="title-container">
             <h2 className="office-of">OFFICE OF</h2>
             <h1 className="student">STUDENT</h1>
@@ -27,7 +27,7 @@ function Main() {
             <p className="thai-text">สำนักสวัสดิการนักศึกษา มหาวิทยาลัยหอการค้าไทย</p>
           </div>
         </div>
-  
+
         <div className="contact-info">
           <div className="contact-item">
             <div className="contact-icon">☎</div>
@@ -43,7 +43,7 @@ function Main() {
           </div>
         </div>
       </div>
-  
+
       <div className="right-panel">
         {!showLogin ? (
           <button onClick={() => setShowLogin(true)} className="btn btn-primary gologin">
@@ -73,7 +73,7 @@ function Main() {
                 Log in
               </button>
               <div className="login-back">
-                 <span onClick={() => setShowLogin(false)}> &lt;&lt; Back</span>
+                <span onClick={() => setShowLogin(false)}> &lt;&lt; Back</span>
               </div>
             </form>
           </div>

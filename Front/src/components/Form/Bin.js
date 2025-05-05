@@ -15,7 +15,7 @@ const Bin = () => {
     receiver: "",
     staffName: ""
   });
-  const [identityDoc, setIdentityDoc] = useState(null);
+  const [identityUrl, setIdentityUrl] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
 
 
@@ -27,19 +27,18 @@ const Bin = () => {
         setItem(fetchedItem);
         fetchImage(id);
   
-        if (fetchedItem.status === 'removed') {
-          alert("สิ่งของนี้ถูกนำออกไปแล้ว");
-        }
+
       })
   }, [id]);
 
   const fetchImage = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/lost-items/${id}/image`, {
-        responseType: "blob",
-      });
-      const imageUrl = URL.createObjectURL(response.data);
-      setImageUrl(imageUrl);
+      const [identityRes, imageRes] = await Promise.all([
+        axios.get(`http://localhost:8080/api/lost-items/${id}/identityDoc`, { responseType: "blob" }),
+        axios.get(`http://localhost:8080/api/lost-items/${id}/image`, { responseType: "blob" }),
+      ]);
+      setIdentityUrl(URL.createObjectURL(identityRes.data));
+      setImageUrl(URL.createObjectURL(imageRes.data));
       //console.log("Image Loaded:", imageUrl);
     } catch (error) {
       //console.error("Error fetching image:", error);
@@ -50,9 +49,6 @@ const Bin = () => {
     setItem({ ...item, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setIdentityDoc(e.target.files[0]);
-  };
 
   const handleSetStatusItem = async (e) => {
     e.preventDefault();
@@ -60,21 +56,18 @@ const Bin = () => {
     const formData = new FormData();
     formData.append("receiver", item.receiver);
     formData.append("staffName", item.staffName);
-    if (identityDoc) {
-      formData.append("identityDoc", identityDoc);
-    }
 
     try {
-      await axios.put(`http://localhost:8080/api/lost-items/status/${id}`, formData, {
+      await axios.delete(`http://localhost:8080/api/lost-items/delete/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-      alert("Item status updated successfully");
-      navigate("/inventory");
+      alert("Item Delete successfully");
+      navigate("/removed");
     } catch (error) {
       //console.error("Error updating item status:", error);
-      alert("ไม่สามารถเปลี่ยนสถานะได้");
+      alert("ไม่สามารถเปลี่ยนลบได้");
     }
   };
 
@@ -86,7 +79,7 @@ const Bin = () => {
 
         <form onSubmit={handleSetStatusItem}>
           <div className="row mb-3">
-            <div className="col-md-4 text-center">
+            <div className="col-md-6 text-center">
               {imageUrl ? (
                 <img
                   src={imageUrl}
@@ -99,7 +92,22 @@ const Bin = () => {
               )}
             </div>
 
-            <div className="col-md-8">
+            <div className="col-md-6 text-center">
+              
+              {imageUrl ? (
+                <img
+                  src={identityUrl}
+                  alt="Lost Item"
+                  className="img-fluid rounded"
+                  style={{ maxHeight: "250px", objectFit: "cover" ,boxShadow: "0 4px 8px rgba(0,0,0,0.05)"}}
+                />
+              ) : (
+                <div className="border p-5">ไม่มีรูปภาพ</div>
+              )}
+              <p>เอกสารยืนยันตัวตน</p>
+            </div>
+
+            <div className="col-md-12">
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">ชื่อสิ่งของ<span className="red-star">*</span></label>
@@ -140,17 +148,18 @@ const Bin = () => {
               <label className="form-label">ชื่อผู้มารับของ <span className="red-star">*</span></label>
               <input type="text" name="receiver" required value={item.receiver} onChange={handleChange} className="form-control" disabled={item.status === 'removed'} />
             </div>
-            {/* <div className="col-md-6 mb-3">
-              <label className="form-label">เอกสารยืนยันตัวตน <span className="red-star">*</span></label>
-              <input type="file" name="identityDoc" required onChange={handleFileChange} className="form-control"/>
-            </div> */}
+
             <div className="col-md-6 mb-3">
               <label className="form-label">ชื่อเจ้าหน้าที่นำของออก <span className="red-star">*</span></label>
               <input type="text" name="staffName" required value={item.staffName} onChange={handleChange} className="form-control" disabled={item.status === 'removed'}/>
             </div>
+
           </div>
           
-
+          <div className="d-flex justify-content-end gap-2">
+            <button type="button" className="btn btn-secondary" onClick={() => navigate("/removed")}>ยกเลิก</button>
+            <button type="submit" className="btn btn-danger">นำของออก</button>
+          </div>
         </form>
       </div>
     </div>
