@@ -84,7 +84,7 @@ const InventoryList = () => {
 
       <div className="container text-center mt-4">
           <h1 className="mb-0 fs-4 px-3 py-1">หน้ารายการสิ่งของ</h1>
-          <hr></hr>
+          <hr style={{width:'100%'}}></hr>
       </div>
 
       {loading ? (

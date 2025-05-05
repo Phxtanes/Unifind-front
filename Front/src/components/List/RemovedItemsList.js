@@ -227,14 +227,11 @@ const RemovedItemsList = () => {
                   <td className="text-center p-2" style={{ color: "#FF0000" }}>
                     {item.status}
                   </td>
-                    <td className="p-2">
-                      <Link
-                        to={`/bin/${item.id}`}
-                        className="btn btn-danger btn-md rounded-pill shadow-sm"
-                      >
-                        รายละเอียด
-                      </Link>
-                    </td>
+                  <td className="p-2">
+                    <Link to={`/bin/${item.id}`} className="btn btn-danger btn-md rounded-pill shadow-sm">
+                      รายละเอียด
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
