@@ -137,14 +137,6 @@ public class LostItemController {
         return repository.save(item);
     }
 
-    // 🔹 เพิ่ม QRUrl
-    @PutMapping("/QR/{id}")
-    public LostItem AddQRURL(@PathVariable String id, @RequestBody LostItem newItem) {
-        LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
-        item.setId_qr(newItem.getId_qr());
-        return repository.save(item);
-    }
-
     // 🔹 ลบออกจาก DB
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

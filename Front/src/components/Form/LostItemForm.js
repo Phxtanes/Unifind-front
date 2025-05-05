@@ -16,7 +16,6 @@ const LostItemForm = () => {
     identityDoc: "",
     receiver: "",
     staffName: "",
-    id_qr: "",
   });
 
   const [qrUrl, setQrUrl] = useState("");
@@ -50,8 +49,6 @@ const LostItemForm = () => {
       const url = `http://localhost:3000/remove/${lostItemId}`;
       setQrUrl(url);
       console.log("QR URL:", url);
-
-      await axios.put(`http://localhost:8080/api/lost-items/QR/${lostItemId}`, { id_qr: url });
 
       if (file) {
         const formData = new FormData();
