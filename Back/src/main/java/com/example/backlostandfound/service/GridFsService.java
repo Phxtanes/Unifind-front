@@ -22,7 +22,7 @@ public class GridFsService {
         this.gridFSBucket = GridFSBuckets.create(mongoDatabaseFactory.getMongoDatabase());
     }
 
-    // ✅ อัปโหลดไฟล์ไปยัง MongoDB GridFS
+    //  อัปโหลดไฟล์ไปยัง MongoDB GridFS
     public String uploadFile(MultipartFile file) throws IOException {
         try (InputStream inputStream = file.getInputStream()) {
             GridFSUploadOptions options = new GridFSUploadOptions()
@@ -33,14 +33,14 @@ public class GridFsService {
         }
     }
 
-    // ✅ ดึงไฟล์จาก MongoDB GridFS ตาม ID
+    //  ดึงไฟล์จาก MongoDB GridFS ตาม ID
     public byte[] getFile(String id) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         gridFSBucket.downloadToStream(new ObjectId(id), outputStream);
         return outputStream.toByteArray();
     }
 
-    // ✅ ลบไฟล์จาก MongoDB GridFS ตาม ID
+    //  ลบไฟล์จาก MongoDB GridFS ตาม ID
     public void deleteFile(String fileId) throws IOException {
         if (fileId != null) {
             ObjectId objectId = new ObjectId(fileId); // เปลี่ยนเป็น ObjectId

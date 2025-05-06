@@ -28,28 +28,28 @@ public class LostItemController {
     private LostItemRepository repository;
 
     @Autowired
-    private GridFsService gridFsService; // ✅ Inject GridFsService
+    private GridFsService gridFsService; //GridFsService
 
-    // 🔹 เพิ่มของหาย
+    //  เพิ่มของหาย
     @PostMapping
     public LostItem addLostItem(@RequestBody LostItem item) {
         return repository.save(item);
     }
 
-    // 🔹 ดึงรายการของหายทั้งหมด
+    // ดึงรายการของหายทั้งหมด
     @GetMapping
     public List<LostItem> getAllLostItems() {
         return repository.findAll();
     }
 
-    // 🔹 ดึงของหายตาม ID
+    // ดึงของหายตาม ID
     @GetMapping("/{id}")
     public LostItem getLostItemById(@PathVariable String id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lost item not found"));
     }
 
-    // 🔹 ดึงของหายตามสถานะ "removed"
+    //  ดึงของหายตามสถานะ "removed"
     @GetMapping("/status/removed")
     public List<LostItem> getLostItemsByRemoved(
             @RequestParam(required = false) String date,
@@ -72,7 +72,7 @@ public class LostItemController {
             return repository.findByStatus("removed");
     }
 
-    // 🔹 ดึงของหายตามสถานะ "stored"
+    //  ดึงของหายตามสถานะ "stored"
     @GetMapping("/status/stored")
     public List<LostItem> getLostItemsByStored(
             @RequestParam(required = false) String date,
@@ -95,7 +95,7 @@ public class LostItemController {
         return repository.findByStatus("stored");
     }
 
-    // 🔹 อัปเดตสถานะของหายเป็น "removed"
+    //  อัปเดตสถานะของหายเป็น "removed"
     @PutMapping(value = "/status/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public LostItem updateLostItemStatusWithFile(
             @PathVariable String id,
@@ -110,7 +110,7 @@ public class LostItemController {
         item.setStaffName(staffName);
         item.setStatus("removed");
 
-        // ✅ ถ้ามีไฟล์แนบ ให้ upload ไป GridFS
+        //  ถ้ามีไฟล์แนบ ให้ upload ไป GridFS
         if (identityDoc != null && !identityDoc.isEmpty()) {
             try {
                 String fileId = gridFsService.uploadFile(identityDoc);
@@ -123,7 +123,7 @@ public class LostItemController {
         return repository.save(item);
     }
 
-    // 🔹 อัปเดตข้อมูลของหาย
+    // อัปเดตข้อมูลของหาย
     @PutMapping("/edit/{id}")
     public LostItem updateLostItem(@PathVariable String id, @RequestBody LostItem newItem) {
         LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
@@ -137,7 +137,7 @@ public class LostItemController {
         return repository.save(item);
     }
 
-    // 🔹 ลบออกจาก DB
+    //  ลบออกจาก DB
     @DeleteMapping("/delete/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLostItem(@PathVariable String id) {
@@ -167,13 +167,13 @@ public class LostItemController {
 
 
 
-    // 🔹 API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
+    // API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
     @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String uploadImage(@PathVariable String id, @RequestParam("file") MultipartFile file) {
         try {
-            String fileId = gridFsService.uploadFile(file); // ✅ อัปโหลดไฟล์ไป GridFS
+            String fileId = gridFsService.uploadFile(file); //  อัปโหลดไฟล์ไป GridFS
             LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
-            item.setPicture(fileId); // ✅ บันทึก GridFS ID ไว้ใน DB
+            item.setPicture(fileId); //  บันทึก GridFS ID ไว้ใน DB
             repository.save(item);
             return fileId;
         } catch (IOException e) {
@@ -181,7 +181,7 @@ public class LostItemController {
         }
     }
 
-    // 🔹 API สำหรับดึงรูปภาพจาก MongoDB GridFS
+    // API สำหรับดึงรูปภาพจาก MongoDB GridFS
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
         LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
@@ -193,7 +193,7 @@ public class LostItemController {
             byte[] fileData = gridFsService.getFile(item.getPicture());
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + item.getPicture() + "\"")
-                    .contentType(MediaType.IMAGE_JPEG) // ✅ สามารถเปลี่ยนเป็นไฟล์ประเภทอื่นได้
+                    .contentType(MediaType.IMAGE_JPEG) //  สามารถเปลี่ยนเป็นไฟล์ประเภทอื่นได้
                     .body(fileData);
         } catch (IOException e) {
             return ResponseEntity.badRequest().build();
