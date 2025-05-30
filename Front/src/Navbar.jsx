@@ -1,109 +1,165 @@
-import React from "react";
+import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "./navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    navigate("/"); 
+    navigate("/");
   };
 
   const handleBack = () => {
-    navigate(-1); 
+    navigate(-1);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
   return (
-    <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      <nav
-        className="navbar navbar-expand-lg navbar-dark "
-        style={{
-          position: "fixed", 
-          top: 0, 
-          left: 0, 
-          width: "100%", 
-          zIndex: 10000, 
-          backgroundColor: "#2F318B"
-        }}
-      >
-        <div className="container-fluid">
-          <span className="navbar-brand">Unifind Project</span>
+    <div className="app-container">
+      {/* Modern Navbar */}
+      <nav className="modern-navbar">
+        <div className="navbar-left">
+          {/* Hamburger Button */}
+          <button
+            className="hamburger-btn"
+            type="button"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            <div className="hamburger-icon">
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+              <div className="hamburger-line"></div>
+            </div>
+          </button>
+          
+          {/* Brand Text */}
+          <h1 className="brand-text">
+            ✨ Unifind Project
+          </h1>
         </div>
 
-        <div>
-          <button
-            className="btn btn-danger m-2"
-            style={{ width: "150px" }}
-            onClick={handleLogout}
-          >
-            ออกจากระบบ
-          </button>
-        </div>
+        {/* Logout Button */}
+        <button
+          className="logout-btn"
+          onClick={handleLogout}
+          aria-label="Logout"
+        >
+         ออกจากระบบ
+        </button>
       </nav>
 
-      <div style={{ flex: 1, display: "flex", marginTop: "56px" }}>
-        <div
-          className="bg-light d-flex flex-column justify-content-between p-3"
-          style={{
-            width: "250px",
-            borderRight: "1px solid #ddd",
-            position: "fixed",
-            top: "56px",
-            left: 0,
-            height: "calc(100vh - 56px)",
-            zIndex: 9999,
-            backgroundColor: "white",
-          }}
-        >
-          <div className="mb-auto">
-            <ul className="nav flex-column">
-              <li className="nav-item border-bottom">
-                <a className="nav-link active menu-item" style={{color:"#000"}} href="/dashboard">
-                  Dashboard
-                </a>
-              </li>
-              <li className="nav-item border-bottom">
-                <a className="nav-link active menu-item" style={{color:"#000"}} href="/lostitemfrom">
-                  Add Item
-                </a>
-              </li>
-              <li className="nav-item border-bottom">
-                <a className="nav-link menu-item" style={{color:"#000"}} href="/inventory">
-                  Inventory
-                </a>
-              </li>
-              <li className="nav-item border-bottom">
-                <a className="nav-link menu-item" style={{color:"#000"}} href="#">
-                  Settings
-                </a>
-              </li>
-              <li className="nav-item border-bottom">
-                <a className="nav-link menu-item" style={{color:"#000"}} href="#">
-                  Contact
-                </a>
-              </li>
-            </ul>
+      {/* Sidebar Overlay */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
+        onClick={closeSidebar}
+      ></div>
+
+      {/* Content Wrapper */}
+      <div className="content-wrapper">
+        {/* Modern Sidebar */}
+        <aside className={`modern-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+          <div>
+            {/* Sidebar Header */}
+            <div className="sidebar-header">
+              <h6 className="sidebar-title">
+                📋 เมนูหลัก
+              </h6>
+            </div>
+            
+            {/* Navigation Menu */}
+            <nav>
+              <ul className="nav-menu">
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/dashboard"
+                    onClick={closeSidebar}
+                  >
+                    🏠 Dashboard
+                  </a>
+                </li>
+                
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/lostitemfrom"
+                    onClick={closeSidebar}
+                  >
+                    ➕ Add Item
+                  </a>
+                </li>
+                
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/inventory"
+                    onClick={closeSidebar}
+                  >
+                    📦 Inventory
+                  </a>
+                </li>
+                
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="#"
+                    onClick={closeSidebar}
+                  >
+                    ⚙️ Settings
+                  </a>
+                </li>
+                
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="#"
+                    onClick={closeSidebar}
+                  >
+                    📞 Contact
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </div>
 
-          <div>
-
-            <button onClick={() => navigate("/removed")} className="btn btn-secondary btn-danger mb-3 w-100">
-                ถังขยะ
-            </button>
-
-            <button className="btn btn-secondary w-100" onClick={handleBack}>
-              ย้อนกลับ
+          {/* Sidebar Actions */}
+          <div className="sidebar-actions">
+            <button
+              className="action-btn trash-btn"
+              onClick={() => {
+                navigate("/removed");
+                closeSidebar();
+              }}
+            >
+              🗑️ ถังขยะ
             </button>
             
+            <button
+              className="action-btn back-btn"
+              onClick={() => {
+                handleBack();
+                closeSidebar();
+              }}
+            >
+              ⬅️ ย้อนกลับ
+            </button>
           </div>
-        </div>
+        </aside>
 
-        <div
-          className="flex-grow-1 p-3"
-          style={{ marginLeft: "250px", overflowY: "auto" }}
-        >
+        {/* Main Content Area - เต็มพื้นที่ไม่ย่อลงมา */}
+        <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );
