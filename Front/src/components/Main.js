@@ -1,14 +1,48 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
 import "../main.css";
 
 function Main() {
   const [showLogin, setShowLogin] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
 
-  const handleLoginSubmit = (e) => {
+  // ถ้า login แล้วให้ redirect ไปหน้า dashboard
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    navigate("/Dashboard");
+    setLoading(true);
+    setError("");
+
+    // ตรวจสอบว่ากรอกข้อมูลครบหรือไม่
+    if (!username.trim() || !password.trim()) {
+      setError("กรุณากรอก Username และ Password");
+      setLoading(false);
+      return;
+    }
+
+    // เรียกใช้ฟังก์ชัน login จาก AuthContext (ให้ AuthContext ตรวจสอบ username/password)
+    const success = login(username.trim(), password.trim());
+    
+    setLoading(false);
+
+    if (success) {
+      // Login สำเร็จ - ไปหน้า dashboard
+      navigate("/dashboard", { replace: true });
+    } else {
+      setError("Username หรือ Password ไม่ถูกต้อง");
+    }
   };
 
   return (
@@ -52,16 +86,27 @@ function Main() {
         ) : (
           <div className="login-container">
             <h4 className="login-title">== กรุณาเข้าสู่ระบบ ==</h4>
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
             <form onSubmit={handleLoginSubmit} className="login-form">
               <input
                 type="text"
                 className="login-input"
                 placeholder="Username or email?"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
               />
               <input
                 type="password"
                 className="login-input"
                 placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={loading}
               />
               <div className="login-options">
                 <label>
@@ -69,11 +114,23 @@ function Main() {
                 </label>
                 <span className="forgot-password">forgot password?</span>
               </div>
-              <button type="submit" className="login-button">
-                Log in
+              <button type="submit" className="login-button" disabled={loading}>
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    กำลังเข้าสู่ระบบ...
+                  </>
+                ) : (
+                  "Log in"
+                )}
               </button>
               <div className="login-back">
-                <span onClick={() => setShowLogin(false)}> &lt;&lt; Back</span>
+                <span onClick={() => {
+                  setShowLogin(false);
+                  setError("");
+                  setUsername("");
+                  setPassword("");
+                }}> &lt;&lt; Back</span>
               </div>
             </form>
           </div>

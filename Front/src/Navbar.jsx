@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
+  const { logout } = useAuth(); // เพิ่มการใช้ logout จาก AuthContext
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    navigate("/");
+    logout(); // เรียกใช้ฟังก์ชัน logout จาก AuthContext เพื่อเคลียร์สถานะ authentication
+    navigate("/"); // จากนั้นค่อย navigate ไปหน้าแรก
   };
 
   const handleBack = () => {
@@ -156,7 +159,7 @@ function Navbar() {
           </div>
         </aside>
 
-        {/* Main Content Area - เต็มพื้นที่ไม่ย่อลงมา */}
+        {/* Main Content Area */}
         <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
           <Outlet />
         </main>
