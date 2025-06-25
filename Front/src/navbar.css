@@ -1,4 +1,4 @@
-Modern Navbar with Separated CSS
+/* Modern Navbar with Website Main Colors */
 * {
   margin: 0;
   padding: 0;
@@ -18,10 +18,10 @@ body {
   width: 100%;
   height: 64px;
   z-index: 10000;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2F318B 0%, #1a1b5e 100%);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(47, 49, 139, 0.3);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -48,7 +48,7 @@ body {
 }
 
 .hamburger-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 102, 0, 0.2);
   transform: scale(1.05);
 }
 
@@ -71,7 +71,7 @@ body {
 .brand-text {
   font-weight: 700;
   font-size: 1.5rem;
-  background: linear-gradient(45deg, #fff, #f0f8ff);
+  background: linear-gradient(45deg, #fff, #ff6600);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -80,13 +80,13 @@ body {
 }
 
 .logout-btn {
-  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  background: linear-gradient(135deg, #ff6600, #e55a00);
   border: none;
   border-radius: 25px;
   padding: 10px 20px;
   color: white;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(238, 90, 82, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
   transition: all 0.3s ease;
   font-size: 0.9rem;
   width: 150px;
@@ -95,7 +95,8 @@ body {
 
 .logout-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(238, 90, 82, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+  background: linear-gradient(135deg, #e55a00, #cc5100);
 }
 
 /* ================ OVERLAY STYLES ================ */
@@ -105,7 +106,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(47, 49, 139, 0.5);
   backdrop-filter: blur(5px);
   z-index: 9998;
   opacity: 0;
@@ -128,11 +129,12 @@ body {
   height: calc(100vh - 64px);
   z-index: 9999;
   transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 4px 0 20px rgba(47, 49, 139, 0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 2rem 0;
+  border-right: 3px solid #ff6600;
 }
 
 .modern-sidebar.open {
@@ -146,7 +148,7 @@ body {
 }
 
 .sidebar-title {
-  color: #4a5568;
+  color: #2F318B;
   font-weight: 700;
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -168,7 +170,7 @@ body {
 }
 
 .nav-link {
-  color: #4a5568;
+  color: #2F318B;
   text-decoration: none;
   padding: 1rem 1.5rem;
   display: block;
@@ -176,14 +178,16 @@ body {
   transition: all 0.3s ease;
   border-radius: 12px;
   cursor: pointer;
+  border-left: 3px solid transparent;
 }
 
 .nav-link:hover {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #2F318B, #1a1b5e);
   color: white;
   transform: translateX(5px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(47, 49, 139, 0.3);
   text-decoration: none;
+  border-left: 3px solid #ff6600;
 }
 
 .sidebar-actions {
@@ -203,25 +207,27 @@ body {
 }
 
 .trash-btn {
-  background: linear-gradient(135deg, #f56565, #e53e3e);
+  background: linear-gradient(135deg, #ff6600, #e55a00);
   color: white;
-  box-shadow: 0 4px 15px rgba(245, 101, 101, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
 }
 
 .trash-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+  background: linear-gradient(135deg, #e55a00, #cc5100);
 }
 
 .back-btn {
-  background: linear-gradient(135deg, #a0aec0, #718096);
+  background: linear-gradient(135deg, #2F318B, #1a1b5e);
   color: white;
-  box-shadow: 0 4px 15px rgba(160, 174, 192, 0.3);
+  box-shadow: 0 4px 15px rgba(47, 49, 139, 0.3);
 }
 
 .back-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(160, 174, 192, 0.4);
+  box-shadow: 0 6px 20px rgba(47, 49, 139, 0.4);
+  background: linear-gradient(135deg, #1a1b5e, #0f1040);
 }
 
 /* ================ MAIN CONTENT STYLES ================ */
@@ -244,7 +250,7 @@ body {
   transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
   min-height: calc(100vh - 64px);
-  padding: 2rem;
+  padding: 0rem;
   overflow-y: auto;
 }
 
@@ -335,7 +341,7 @@ body {
 .hamburger-btn:focus,
 .logout-btn:focus,
 .action-btn:focus {
-  outline: 2px solid #667eea;
+  outline: 2px solid #ff6600;
   outline-offset: 2px;
 }
 
@@ -350,10 +356,35 @@ body {
 }
 
 .main-content::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #2F318B, #1a1b5e);
   border-radius: 4px;
 }
 
 .main-content::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a6fd8, #6a42a0);
+  background: linear-gradient(135deg, #1a1b5e, #0f1040);
+}
+
+/* ================ ADDITIONAL ACCENT COLORS ================ */
+.nav-link.active {
+  background: linear-gradient(135deg, #2F318B, #1a1b5e);
+  color: white;
+  border-left: 3px solid #ff6600;
+}
+
+.hamburger-btn:focus {
+  background: rgba(255, 102, 0, 0.2);
+  outline: 2px solid #ff6600;
+}
+
+/* ================ ENHANCED HOVER EFFECTS ================ */
+.hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+.action-btn:active {
+  transform: translateY(0);
 }
