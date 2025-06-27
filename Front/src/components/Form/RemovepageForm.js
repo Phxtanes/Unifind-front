@@ -13,7 +13,12 @@ const Removepage = () => {
     namereport: "",
     locker: "",
     receiver: "",
-    staffName: ""
+    staffName: "",
+    // เพิ่มฟิลด์ใหม่
+    finderType: "",
+    studentId: "",
+    universityEmail: "",
+    phoneNumber: ""
   });
   const [identityDoc, setIdentityDoc] = useState(null);
   const [imageUrl, setImageUrl] = useState(null);
@@ -23,7 +28,15 @@ const Removepage = () => {
     axios.get(`http://localhost:8080/api/lost-items/${id}`)
       .then((response) => {
         //console.log("ข้อมูลที่ได้จาก API:", response.data); 
-        setItem(response.data);
+        const data = response.data;
+        setItem({
+          ...data,
+          // ตั้งค่าเริ่มต้นสำหรับฟิลด์ใหม่ถ้าไม่มีข้อมูล
+          finderType: data.finderType || "",
+          studentId: data.studentId || "",
+          universityEmail: data.universityEmail || "",
+          phoneNumber: data.phoneNumber || ""
+        });
         fetchImage(id);
       })
       .catch((error) => {
@@ -73,6 +86,15 @@ const Removepage = () => {
     } catch (error) {
       //console.error("Error updating item status:", error);
       alert("ไม่สามารถเปลี่ยนสถานะได้");
+    }
+  };
+
+  const getFinderTypeText = (type) => {
+    switch(type) {
+      case "student": return "นักศึกษา";
+      case "employee": return "พนักงาน";
+      case "outsider": return "บุคคลภายนอก";
+      default: return "ไม่ระบุ";
     }
   };
 
@@ -130,6 +152,39 @@ const Removepage = () => {
             <div className="col-md-6 mb-3">
               <label className="form-label">เลขล็อคเกอร์ (ถ้ามี)<span className="red-star">*</span></label>
               <div className="form-control bg-light">{item.locker}</div>
+            </div>
+          </div>
+
+          {/* ส่วนแสดงข้อมูลผู้พบ */}
+          <div className="card mb-3" style={{ backgroundColor: '#f8f9fa' }}>
+            <div className="card-header">
+              <h6 className="mb-0">ข้อมูลผู้พบสิ่งของ</h6>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ประเภทผู้พบ</label>
+                  <div className="form-control bg-light">{getFinderTypeText(item.finderType)}</div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">เบอร์โทรศัพท์</label>
+                  <div className="form-control bg-light">{item.phoneNumber || "ไม่ระบุ"}</div>
+                </div>
+              </div>
+
+              {/* แสดงข้อมูลเพิ่มเติมสำหรับนักศึกษา */}
+              {item.finderType === "student" && (
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">เลขทะเบียนนักศึกษา</label>
+                    <div className="form-control bg-light">{item.studentId || "ไม่ระบุ"}</div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">อีเมลมหาวิทยาลัย</label>
+                    <div className="form-control bg-light">{item.universityEmail || "ไม่ระบุ"}</div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 

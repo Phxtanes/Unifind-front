@@ -2,7 +2,7 @@ package com.example.backlostandfound.controller;
 
 import com.example.backlostandfound.model.LostItem;
 import com.example.backlostandfound.repository.LostItemRepository;
-import com.example.backlostandfound.service.GridFsService; // ✅ Import GridFsService
+import com.example.backlostandfound.service.GridFsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,13 +11,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/lost-items")
@@ -28,12 +26,37 @@ public class LostItemController {
     private LostItemRepository repository;
 
     @Autowired
-    private GridFsService gridFsService; //GridFsService
+    private GridFsService gridFsService;
 
     //  เพิ่มของหาย
     @PostMapping
     public LostItem addLostItem(@RequestBody LostItem item) {
-        return repository.save(item);
+        // Debug: แสดงข้อมูลที่ได้รับจาก Frontend
+        System.out.println("=== DEBUG: Received data from frontend ===");
+        System.out.println("Name: " + item.getName());
+        System.out.println("Category: " + item.getCategory());
+        System.out.println("Place: " + item.getPlace());
+        System.out.println("Description: " + item.getDescription());
+        System.out.println("NameReport: " + item.getNamereport());
+        System.out.println("Locker: " + item.getLocker());
+        System.out.println("FinderType: " + item.getFinderType());
+        System.out.println("PhoneNumber: " + item.getPhoneNumber());
+        System.out.println("StudentId: " + item.getStudentId());
+        System.out.println("UniversityEmail: " + item.getUniversityEmail());
+        System.out.println("=========================================");
+
+        LostItem savedItem = repository.save(item);
+
+        // Debug: แสดงข้อมูลที่บันทึกลงฐานข้อมูล
+        System.out.println("=== DEBUG: Saved data to database ===");
+        System.out.println("Saved ID: " + savedItem.getId());
+        System.out.println("Saved FinderType: " + savedItem.getFinderType());
+        System.out.println("Saved PhoneNumber: " + savedItem.getPhoneNumber());
+        System.out.println("Saved StudentId: " + savedItem.getStudentId());
+        System.out.println("Saved UniversityEmail: " + savedItem.getUniversityEmail());
+        System.out.println("====================================");
+
+        return savedItem;
     }
 
     // ดึงรายการของหายทั้งหมด
@@ -42,57 +65,79 @@ public class LostItemController {
         return repository.findAll();
     }
 
-    // ดึงของหายตาม ID
+    // ดึงของหายตาม ID พร้อม normalize
     @GetMapping("/{id}")
     public LostItem getLostItemById(@PathVariable String id) {
-        return repository.findById(id)
+        LostItem item = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Lost item not found"));
+        return normalizeItem(item);
     }
 
-    //  ดึงของหายตามสถานะ "removed"
+    //  ดึงของหายตามสถานะ "removed" พร้อม normalize
     @GetMapping("/status/removed")
     public List<LostItem> getLostItemsByRemoved(
             @RequestParam(required = false) String date,
-            @RequestParam(required = false) Integer locker)
-        {
+            @RequestParam(required = false) Integer locker) {
 
-            if (date != null) {
-                LocalDate localDate = LocalDate.parse(date.trim());
-                LocalDateTime start = localDate.atStartOfDay();
-                LocalDateTime end = localDate.plusDays(1).atStartOfDay();
-                if (locker != null) {
-                    return repository.findByStatusAndDateBetweenAndLocker("removed", start, end, locker);
-                }
-                return repository.findByStatusAndDateBetween("removed", start, end);
-            }
+        List<LostItem> items;
 
+        if (date != null) {
+            LocalDate localDate = LocalDate.parse(date.trim());
+            LocalDateTime start = localDate.atStartOfDay();
+            LocalDateTime end = localDate.plusDays(1).atStartOfDay();
             if (locker != null) {
-                return repository.findByStatusAndLocker("removed", locker);
+                items = repository.findByStatusAndDateBetweenAndLocker("removed", start, end, locker);
+            } else {
+                items = repository.findByStatusAndDateBetween("removed", start, end);
             }
-            return repository.findByStatus("removed");
+        } else if (locker != null) {
+            items = repository.findByStatusAndLocker("removed", locker);
+        } else {
+            items = repository.findByStatus("removed");
+        }
+
+        // Normalize ข้อมูลทั้งหมด
+        return items.stream()
+                .map(this::normalizeItem)
+                .collect(Collectors.toList());
     }
 
-    //  ดึงของหายตามสถานะ "stored"
+    //  ดึงของหายตามสถานะ "stored" พร้อม normalize
     @GetMapping("/status/stored")
     public List<LostItem> getLostItemsByStored(
             @RequestParam(required = false) String date,
-            @RequestParam(required = false) Integer locker)
-    {
+            @RequestParam(required = false) Integer locker) {
+
+        List<LostItem> items;
 
         if (date != null) {
-                LocalDate localDate = LocalDate.parse(date.trim());
-                LocalDateTime start = localDate.atStartOfDay();
-                LocalDateTime end = localDate.plusDays(1).atStartOfDay();
-                if (locker != null) {
-                    return repository.findByStatusAndDateBetweenAndLocker("stored", start, end, locker);
-                }
-                return repository.findByStatusAndDateBetween("stored", start, end);
+            LocalDate localDate = LocalDate.parse(date.trim());
+            LocalDateTime start = localDate.atStartOfDay();
+            LocalDateTime end = localDate.plusDays(1).atStartOfDay();
+            if (locker != null) {
+                items = repository.findByStatusAndDateBetweenAndLocker("stored", start, end, locker);
+            } else {
+                items = repository.findByStatusAndDateBetween("stored", start, end);
+            }
+        } else if (locker != null) {
+            items = repository.findByStatusAndLocker("stored", locker);
+        } else {
+            items = repository.findByStatus("stored");
         }
 
-        if (locker != null) {
-            return repository.findByStatusAndLocker("stored", locker);
-        }
-        return repository.findByStatus("stored");
+        // Normalize ข้อมูลทั้งหมด
+        return items.stream()
+                .map(this::normalizeItem)
+                .collect(Collectors.toList());
+    }
+
+    // Helper method เพื่อ normalize ข้อมูล
+    private LostItem normalizeItem(LostItem item) {
+        if (item.getFinderType() == null) item.setFinderType("");
+        if (item.getStudentId() == null) item.setStudentId("");
+        if (item.getUniversityEmail() == null) item.setUniversityEmail("");
+        if (item.getPhoneNumber() == null) item.setPhoneNumber("");
+        return item;
     }
 
     //  อัปเดตสถานะของหายเป็น "removed"
@@ -123,9 +168,15 @@ public class LostItemController {
         return repository.save(item);
     }
 
-    // อัปเดตข้อมูลของหาย
+    // อัปเดตข้อมูลของหาย (รวมฟิลด์ใหม่)
     @PutMapping("/edit/{id}")
     public LostItem updateLostItem(@PathVariable String id, @RequestBody LostItem newItem) {
+        System.out.println("=== DEBUG: Updating item with ID: " + id + " ===");
+        System.out.println("New FinderType: " + newItem.getFinderType());
+        System.out.println("New PhoneNumber: " + newItem.getPhoneNumber());
+        System.out.println("New StudentId: " + newItem.getStudentId());
+        System.out.println("New UniversityEmail: " + newItem.getUniversityEmail());
+
         LostItem item = repository.findById(id).orElseThrow(() -> new RuntimeException("Lost item not found"));
 
         item.setName(newItem.getName().toUpperCase());
@@ -134,7 +185,24 @@ public class LostItemController {
         item.setDescription(newItem.getDescription());
         item.setNamereport(newItem.getNamereport());
         item.setLocker(newItem.getLocker());
-        return repository.save(item);
+
+        // อัปเดตฟิลด์ใหม่สำหรับข้อมูลผู้พบ
+        if (newItem.getFinderType() != null) {
+            item.setFinderType(newItem.getFinderType());
+        }
+        if (newItem.getPhoneNumber() != null) {
+            item.setPhoneNumber(newItem.getPhoneNumber());
+        }
+        if (newItem.getStudentId() != null) {
+            item.setStudentId(newItem.getStudentId());
+        }
+        if (newItem.getUniversityEmail() != null) {
+            item.setUniversityEmail(newItem.getUniversityEmail());
+        }
+
+        LostItem savedItem = repository.save(item);
+        System.out.println("=== DEBUG: Updated item saved ===");
+        return savedItem;
     }
 
     //  ลบออกจาก DB
@@ -164,8 +232,6 @@ public class LostItemController {
         // ลบข้อมูล LostItem จากฐานข้อมูล
         repository.delete(item);
     }
-
-
 
     // API สำหรับอัปโหลดรูปภาพไปยัง MongoDB GridFS
     @PostMapping(value = "/{id}/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

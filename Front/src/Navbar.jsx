@@ -112,7 +112,7 @@ function Navbar() {
                   </a>
                 </li>
                 
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <a
                     className="nav-link"
                     href="#"
@@ -120,9 +120,9 @@ function Navbar() {
                   >
                     ⚙️ Settings
                   </a>
-                </li>
+                </li> */}
                 
-                <li className="nav-item">
+                {/* <li className="nav-item">
                   <a
                     className="nav-link"
                     href="#"
@@ -130,7 +130,7 @@ function Navbar() {
                   >
                     📞 Contact
                   </a>
-                </li>
+                </li> */}
               </ul>
             </nav>
           </div>

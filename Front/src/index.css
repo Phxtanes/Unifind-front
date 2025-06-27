@@ -33,5 +33,46 @@ code {
   background-color: #E0E0E0;
 }
 
+/* เพิ่มใน index.css หรือไฟล์ CSS หลัก */
+
+.red-star {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.card-header h5, .card-header h6 {
+  color: #495057;
+  font-weight: 600;
+}
+
+.finder-info-card {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+.small.text-muted {
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+/* สำหรับ responsive */
+@media (max-width: 768px) {
+  .card-body .row {
+    margin: 0;
+  }
+  
+  .card-body .col-md-6 {
+    padding: 0.25rem;
+  }
+  
+  .form-control, .form-select {
+    font-size: 0.9rem;
+  }
+}
 
 

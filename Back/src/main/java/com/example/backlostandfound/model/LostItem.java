@@ -1,6 +1,5 @@
 package com.example.backlostandfound.model;
 
-
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -25,12 +24,19 @@ public class LostItem {
     private String receiver;
     private String staffName;
 
+    // เพิ่มฟิลด์ใหม่สำหรับข้อมูลผู้พบ
+    private String finderType;      // ประเภทผู้พบ: student, employee, outsider
+    private String studentId;       // เลขทะเบียนนักศึกษา (สำหรับนักศึกษาเท่านั้น)
+    private String universityEmail; // อีเมลมหาวิทยาลัย (สำหรับนักศึกษาเท่านั้น)
+    private String phoneNumber;     // เบอร์โทรศัพท์
+
     public LostItem() {
         this.id = UUID.randomUUID().toString();  // สร้าง ID อัตโนมัติ
     }
 
     public LostItem(String name, String category, String place, LocalDateTime date, String description, String picture,
-                    String namereport, Long locker, String id_qr, String status, String identityDoc, String receiver, String staffName) {
+                    String namereport, Long locker, String id_qr, String status, String identityDoc, String receiver,
+                    String staffName, String finderType, String studentId, String universityEmail, String phoneNumber) {
         this.name = name;
         this.category = category;
         this.place = place;
@@ -44,9 +50,13 @@ public class LostItem {
         this.identityDoc = identityDoc;
         this.receiver = receiver;
         this.staffName = staffName;
+        this.finderType = finderType;
+        this.studentId = studentId;
+        this.universityEmail = universityEmail;
+        this.phoneNumber = phoneNumber;
     }
 
-
+    // Getters และ Setters สำหรับฟิลด์เดิม
     public String getId() {
         return id;
     }
@@ -157,5 +167,38 @@ public class LostItem {
 
     public void setReceiver(String receiver) {
         this.receiver = receiver;
+    }
+
+    // Getters และ Setters สำหรับฟิลด์ใหม่
+    public String getFinderType() {
+        return finderType;
+    }
+
+    public void setFinderType(String finderType) {
+        this.finderType = finderType;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getUniversityEmail() {
+        return universityEmail;
+    }
+
+    public void setUniversityEmail(String universityEmail) {
+        this.universityEmail = universityEmail;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

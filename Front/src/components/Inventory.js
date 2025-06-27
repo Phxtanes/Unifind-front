@@ -6,7 +6,6 @@ import "datatables.net";
 import "datatables.net-bs5";
 import "datatables.net-bs5/css/dataTables.bootstrap5.min.css";
 
-
 const InventoryList = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,14 +57,12 @@ const InventoryList = () => {
         }
         $('#itemsTable').DataTable({
           columnDefs: [
-            { targets: [0, 6, 7], orderable: false }, // ไม่ให้สามารถ sort คอลัมน์ที่ 0 (รูปภาพ), 6 (แก้ไข), 7 (นำออก)
+            { targets: [0, 7, 8], orderable: false }, // ไม่ให้สามารถ sort คอลัมน์ที่ 0 (รูปภาพ), 7 (แก้ไข), 8 (นำออก)
           ],
         });
       }, 500);
     }
   }, [loading, error, items]);
-
-
 
   const formatThaiDate = (dateString) => {
     if (!dateString) return "-";
@@ -74,6 +71,15 @@ const InventoryList = () => {
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear() + 543;
     return `${day}-${month}-${year}`;
+  };
+
+  const getFinderTypeText = (type) => {
+    switch(type) {
+      case "student": return "นักศึกษา";
+      case "employee": return "พนักงาน";
+      case "outsider": return "บุคคลภายนอก";
+      default: return "ไม่ระบุ";
+    }
   };
 
   return (
@@ -142,6 +148,7 @@ const InventoryList = () => {
                   <th className="text-center p-3">ประเภท</th>
                   <th className="text-center p-3">วันที่พบ</th>
                   <th className="text-center p-3">ล็อคเกอร์</th>
+                  <th className="text-center p-3">ผู้พบ</th>
                   <th className="text-center p-3">สถานะ</th>
                   <th className="text-center p-3">แก้ไข</th>
                   <th className="text-center p-3">นำออก</th>
@@ -172,6 +179,21 @@ const InventoryList = () => {
                     <td className="text-center p-2">{item.category}</td>
                     <td className="text-center p-2">{formatThaiDate(item.date)}</td>
                     <td className="text-center p-2">{item.locker}</td>
+                    <td className="text-center p-2">
+                      <span className="badge bg-info text-dark">
+                        {getFinderTypeText(item.finderType)}
+                      </span>
+                      {item.phoneNumber && (
+                        <div className="small text-muted mt-1">
+                          📞 {item.phoneNumber}
+                        </div>
+                      )}
+                      {item.finderType === "student" && item.studentId && (
+                        <div className="small text-muted">
+                          🎓 {item.studentId}
+                        </div>
+                      )}
+                    </td>
                     <td className="text-center p-2">{item.status}</td>
                     <td className="p-2">
                       <Link

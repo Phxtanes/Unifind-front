@@ -16,6 +16,11 @@ const LostItemForm = () => {
     identityDoc: "",
     receiver: "",
     staffName: "",
+    // เพิ่มฟิลด์ใหม่
+    finderType: "",
+    studentId: "",
+    universityEmail: "",
+    phoneNumber: ""
   });
 
   const [qrUrl, setQrUrl] = useState("");
@@ -24,7 +29,19 @@ const LostItemForm = () => {
   const categories = ["อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา","นาฬิกา", "กุญแจ", "เอกสาร", "แหวน/กำไล/ต่างหู","เสื้อ", "หมวก", "รองเท้า", "อื่นๆ"];
 
   const handleChange = (e) => {
-    setItem({ ...item, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    console.log(`Field changed: ${name} = ${value}`); // Debug log
+    setItem({ ...item, [name]: value });
+    
+    // ถ้าเปลี่ยนประเภทผู้พบ ให้รีเซ็ตฟิลด์ที่เกี่ยวข้อง
+    if (name === "finderType") {
+      setItem(prev => ({
+        ...prev,
+        [name]: value,
+        studentId: "",
+        universityEmail: ""
+      }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -42,9 +59,20 @@ const LostItemForm = () => {
 
     try {
       const newItem = { ...item, date: new Date().toISOString() };
+      
+      // Debug: แสดงข้อมูลที่จะส่งไป Backend
+      console.log("=== DEBUG: Data being sent to backend ===");
+      console.log(JSON.stringify(newItem, null, 2));
+      console.log("=========================================");
+      
       const response = await axios.post("http://localhost:8080/api/lost-items", newItem);
       const lostItemId = response.data.id;
       console.log("Lost Item ID:", lostItemId);
+      
+      // Debug: แสดงข้อมูลที่ Backend ส่งกลับมา
+      console.log("=== DEBUG: Response from backend ===");
+      console.log(JSON.stringify(response.data, null, 2));
+      console.log("===================================");
 
       const url = `http://localhost:3000/remove/${lostItemId}`;
       setQrUrl(url);
@@ -76,13 +104,19 @@ const LostItemForm = () => {
         identityDoc: "",
         receiver: "",
         staffName: "",
-        id_qr: ""
+        finderType: "",
+        studentId: "",
+        universityEmail: "",
+        phoneNumber: ""
       });
       setFile(null);
       setImageUrl(""); 
       setQrUrl(""); 
     } catch (error) {
+      console.error("=== ERROR ===");
       console.error("Error:", error);
+      console.error("Error response:", error.response?.data);
+      console.error("=============");
       alert("เกิดข้อผิดพลาด กรุณาลองอีกครั้ง");
     }
   };
@@ -92,6 +126,13 @@ const LostItemForm = () => {
       <div className="card shadow p-4">
         <h2 className="card-title text-center mb-3">แจ้งนำสิ่งของเข้า</h2>
         <hr />
+        
+        {/* Debug: แสดงข้อมูลปัจจุบันใน State */}
+        {/* <div className="alert alert-info" style={{ fontSize: '12px', marginBottom: '20px' }}>
+          <strong>Debug Info:</strong>
+          <pre>{JSON.stringify(item, null, 2)}</pre>
+        </div> */}
+        
         <form onSubmit={handleSubmit}>
           <div className="row mt-3">
             <div className="col-md-6 mb-3">
@@ -123,6 +164,68 @@ const LostItemForm = () => {
           <div className="mb-3">
             <label className="form-label">รายละเอียด</label>
             <textarea name="description" value={item.description} onChange={handleChange} className="form-control"></textarea>
+          </div>
+
+          {/* ส่วนใหม่: ผู้พบสิ่งของ */}
+          <div className="card mb-3" style={{ backgroundColor: '#f8f9fa' }}>
+            <div className="card-header">
+              <h5 className="mb-0">ข้อมูลผู้พบสิ่งของ</h5>
+            </div>
+            <div className="card-body">
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">ประเภทผู้พบ <span className="red-star">*</span></label>
+                  <select name="finderType" value={item.finderType} onChange={handleChange} required className="form-select">
+                    <option value="">เลือกประเภทผู้พบ</option>
+                    <option value="student">นักศึกษา</option>
+                    <option value="employee">พนักงาน</option>
+                    <option value="outsider">บุคคลภายนอก</option>
+                  </select>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">เบอร์โทรศัพท์ <span className="red-star">*</span></label>
+                  <input 
+                    type="tel" 
+                    name="phoneNumber" 
+                    value={item.phoneNumber} 
+                    onChange={handleChange} 
+                    required 
+                    className="form-control"
+                    placeholder="เช่น 081-234-5678"
+                  />
+                </div>
+              </div>
+
+              {/* แสดงฟิลด์เพิ่มเติมสำหรับนักศึกษา */}
+              {item.finderType === "student" && (
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">เลขทะเบียนนักศึกษา <span className="red-star">*</span></label>
+                    <input 
+                      type="text" 
+                      name="studentId" 
+                      value={item.studentId} 
+                      onChange={handleChange} 
+                      required 
+                      className="form-control"
+                      placeholder="เช่น 64010123456"
+                    />
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label className="form-label">อีเมลมหาวิทยาลัย <span className="red-star">*</span></label>
+                    <input 
+                      type="email" 
+                      name="universityEmail" 
+                      value={item.universityEmail} 
+                      onChange={handleChange} 
+                      required 
+                      className="form-control"
+                      placeholder="เช่น student@university.ac.th"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="row">

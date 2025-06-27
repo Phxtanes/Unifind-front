@@ -16,6 +16,11 @@ const EditItemForm = () => {
     locker: "",
     status: "",
     namereport: "",
+    // เพิ่มฟิลด์ใหม่
+    finderType: "",
+    studentId: "",
+    universityEmail: "",
+    phoneNumber: ""
   });
   const [qrUrl, setQrUrl] = useState("");
   const [imageUrl, setImageUrl] = useState(null);
@@ -40,7 +45,15 @@ const EditItemForm = () => {
       .then(response => {
         const data = response.data;
         const formattedDate = data.date ? data.date.split("T")[0] : "";
-        setItem({ ...data, date: formattedDate });
+        setItem({ 
+          ...data, 
+          date: formattedDate,
+          // ตั้งค่าเริ่มต้นสำหรับฟิลด์ใหม่ถ้าไม่มีข้อมูล
+          finderType: data.finderType || "",
+          studentId: data.studentId || "",
+          universityEmail: data.universityEmail || "",
+          phoneNumber: data.phoneNumber || ""
+        });
         setQrUrl(`http://localhost:3000/remove/${id}`);
         //console.log("Data Fetched:", data);
         fetchImage();
@@ -49,7 +62,18 @@ const EditItemForm = () => {
   }, [id, fetchImage]);
 
   const handleChange = (e) => {
-    setItem({ ...item, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setItem({ ...item, [name]: value });
+    
+    // ถ้าเปลี่ยนประเภทผู้พบ ให้รีเซ็ตฟิลด์ที่เกี่ยวข้อง
+    if (name === "finderType") {
+      setItem(prev => ({
+        ...prev,
+        [name]: value,
+        studentId: value === "student" ? prev.studentId : "",
+        universityEmail: value === "student" ? prev.universityEmail : ""
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -143,6 +167,66 @@ const EditItemForm = () => {
                 <label className="form-label">รายละเอียด <span className="text-danger">*</span></label>
                 <textarea name="description" value={item.description} onChange={handleChange} required className="form-control" style={{ resize: 'none' }} />
               </div>
+
+              {/* ส่วนข้อมูลผู้พบ */}
+              <div className="card mb-3" style={{ backgroundColor: '#f8f9fa' }}>
+                <div className="card-header">
+                  <h6 className="mb-0">ข้อมูลผู้พบสิ่งของ</h6>
+                </div>
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">ประเภทผู้พบ</label>
+                      <select name="finderType" value={item.finderType} onChange={handleChange} className="form-select">
+                        <option value="">เลือกประเภทผู้พบ</option>
+                        <option value="student">นักศึกษา</option>
+                        <option value="employee">พนักงาน</option>
+                        <option value="outsider">บุคคลภายนอก</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">เบอร์โทรศัพท์</label>
+                      <input 
+                        type="tel" 
+                        name="phoneNumber" 
+                        value={item.phoneNumber} 
+                        onChange={handleChange} 
+                        className="form-control"
+                        placeholder="เช่น 081-234-5678"
+                      />
+                    </div>
+                  </div>
+
+                  {/* แสดงฟิลด์เพิ่มเติมสำหรับนักศึกษา */}
+                  {item.finderType === "student" && (
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">เลขทะเบียนนักศึกษา</label>
+                        <input 
+                          type="text" 
+                          name="studentId" 
+                          value={item.studentId} 
+                          onChange={handleChange} 
+                          className="form-control"
+                          placeholder="เช่น 64010123456"
+                        />
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">อีเมลมหาวิทยาลัย</label>
+                        <input 
+                          type="email" 
+                          name="universityEmail" 
+                          value={item.universityEmail} 
+                          onChange={handleChange} 
+                          className="form-control"
+                          placeholder="เช่น student@university.ac.th"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               <div className="col-md-12 mb-3 text-center">
                 <label className="form-label">คิวอาร์โค้ด</label>
                 <div className="border p-3 rounded bg-light d-flex justify-content-center">

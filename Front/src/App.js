@@ -10,6 +10,7 @@ import Removepage from "./components/Form/RemovepageForm";
 import Bin from "./components/Form/Bin";
 import RemovedItemsList from './components/List/RemovedItemsList';
 import Dashboard from "./components/Dashboard";
+import Reports from "./Reports";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
             <Route path="remove/:id" element={<Removepage />} />
             <Route path="bin/:id" element={<Bin />} />
             <Route path="removed" element={<RemovedItemsList />} />
+           <Route path="/reports" element={<Reports />} />
           </Route>
         </Routes>
       </BrowserRouter>
