@@ -11,6 +11,7 @@ import Bin from "./components/Form/Bin";
 import RemovedItemsList from './components/List/RemovedItemsList';
 import Dashboard from "./components/Dashboard";
 import Reports from "./Reports";
+import UserManagement from "./components/UserManagement"; // เพิ่ม import
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const App = () => {
@@ -32,7 +33,8 @@ const App = () => {
             <Route path="remove/:id" element={<Removepage />} />
             <Route path="bin/:id" element={<Bin />} />
             <Route path="removed" element={<RemovedItemsList />} />
-           <Route path="/reports" element={<Reports />} />
+            <Route path="reports" element={<Reports />} />
+            <Route path="user-management" element={<UserManagement />} /> {/* เพิ่ม route ใหม่ */}
           </Route>
         </Routes>
       </BrowserRouter>

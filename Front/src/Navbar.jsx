@@ -6,7 +6,7 @@ import "./navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  const { logout } = useAuth(); // เพิ่มการใช้ logout จาก AuthContext
+  const { logout, currentUser } = useAuth(); // เพิ่ม currentUser
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
@@ -51,14 +51,27 @@ function Navbar() {
           </h1>
         </div>
 
-        {/* Logout Button */}
-        <button
-          className="logout-btn"
-          onClick={handleLogout}
-          aria-label="Logout"
-        >
-         ออกจากระบบ
-        </button>
+        {/* User Info และ Logout Button */}
+        <div className="d-flex align-items-center gap-3">
+          {/* แสดงข้อมูลผู้ใช้ */}
+          {currentUser && (
+            <div className="text-white d-none d-md-block">
+              <small>สวัสดี, </small>
+              <span className="fw-bold">{currentUser.username}</span>
+              <small className="ms-2 opacity-75">
+                ({currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'เจ้าหน้าที่'})
+              </small>
+            </div>
+          )}
+          
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+            aria-label="Logout"
+          >
+            ออกจากระบบ
+          </button>
+        </div>
       </nav>
 
       {/* Sidebar Overlay */}
@@ -77,6 +90,17 @@ function Navbar() {
               <h6 className="sidebar-title">
                 📋 เมนูหลัก
               </h6>
+              {/* แสดงข้อมูลผู้ใช้ใน sidebar สำหรับ mobile */}
+              {currentUser && (
+                <div className="d-md-none mt-2">
+                  <small className="text-muted">ผู้ใช้: </small>
+                  <span className="fw-bold">{currentUser.username}</span>
+                  <br />
+                  <small className="text-muted">
+                    บทบาท: {currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'เจ้าหน้าที่'}
+                  </small>
+                </div>
+              )}
             </div>
             
             {/* Navigation Menu */}
@@ -111,26 +135,29 @@ function Navbar() {
                     📦 Inventory
                   </a>
                 </li>
-                
-                {/* <li className="nav-item">
+
+                <li className="nav-item">
                   <a
                     className="nav-link"
-                    href="#"
+                    href="/reports"
                     onClick={closeSidebar}
                   >
-                    ⚙️ Settings
+                    📊 Reports
                   </a>
-                </li> */}
+                </li>
                 
-                {/* <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="#"
-                    onClick={closeSidebar}
-                  >
-                    📞 Contact
-                  </a>
-                </li> */}
+                {/* แสดงเมนู User Management เฉพาะ Admin */}
+                {currentUser?.role === 'admin' && (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href="/user-management"
+                      onClick={closeSidebar}
+                    >
+                      👥 จัดการผู้ใช้
+                    </a>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>
