@@ -44,3 +44,53 @@ body {
   }
 }
 
+.custom-tab-nav {
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tab-button {
+  position: relative;
+  background: none;
+  border: none;
+  padding: 10px 16px;
+  color: #6c757d;
+  font-weight: 500;
+  font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.tab-button:hover {
+  color: rgb(47, 49, 139);
+}
+
+.tab-button.active {
+  color: rgb(47, 49, 139);
+  font-weight: 600;
+}
+
+.tab-button.active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  transform: translateX(-50%) scaleX(1);
+  width: 100%;
+  height: 3px;
+  background-color: rgb(47, 49, 139);
+  border-radius: 2px;
+  transition: transform 0.3s ease;
+}
+
+.tab-button::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  transform: translateX(-50%) scaleX(0);
+  width: 100%;
+  height: 3px;
+  background-color: rgb(47, 49, 139);
+  border-radius: 2px;
+  transition: transform 0.3s ease;
+}
+

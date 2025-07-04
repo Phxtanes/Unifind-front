@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+
+
 const Reports = () => {
   const [allItems, setAllItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,6 +29,8 @@ const Reports = () => {
       setLoading(false);
     }
   };
+
+  
 
   // ฟังก์ชันกรองข้อมูลตามช่วงเวลา
   const filterDataByPeriod = (period, customDate = null) => {
@@ -360,8 +364,8 @@ const Reports = () => {
   const performanceStats = generatePerformanceReport();
 
   return (
-    <div className="container-fluid">
-      <div className="d-flex justify-content-between align-items-center mb-4">
+    <div className="container-fluid mt-3">
+      <div className="d-flex justify-content-between align-items-center">
         <h2 className="fw-bold" style={{ color: '#2F318B' }}>
           <i className="fas fa-chart-bar me-2"></i>
           ระบบรายงาน
@@ -369,10 +373,10 @@ const Reports = () => {
       </div>
 
       {/* Tab Navigation */}
-      <ul className="nav nav-tabs mb-4">
+      <ul className="nav mb-4 custom-tab-nav">
         <li className="nav-item">
           <button 
-            className={`nav-link ${activeTab === 'daily' ? 'active' : ''}`}
+            className={`tab-button ${activeTab === 'daily' ? 'active' : ''}`}
             onClick={() => setActiveTab('daily')}
           >
             <i className="fas fa-calendar-day me-2"></i>
@@ -381,7 +385,7 @@ const Reports = () => {
         </li>
         <li className="nav-item">
           <button 
-            className={`nav-link ${activeTab === 'unclaimed' ? 'active' : ''}`}
+            className={`tab-button ${activeTab === 'unclaimed' ? 'active' : ''}`}
             onClick={() => setActiveTab('unclaimed')}
           >
             <i className="fas fa-clock me-2"></i>
@@ -390,7 +394,7 @@ const Reports = () => {
         </li>
         <li className="nav-item">
           <button 
-            className={`nav-link ${activeTab === 'performance' ? 'active' : ''}`}
+            className={`tab-button ${activeTab === 'performance' ? 'active' : ''}`}
             onClick={() => setActiveTab('performance')}
           >
             <i className="fas fa-chart-line me-2"></i>
@@ -398,6 +402,9 @@ const Reports = () => {
           </button>
         </li>
       </ul>
+
+
+
 
       {/* รายงานสถิติ */}
       {activeTab === 'daily' && (

@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import FloatingAddButton from "./components/FloatingAddButton"; 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
-  const { logout, currentUser } = useAuth(); // เพิ่ม currentUser
+  const { logout, currentUser } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
-    logout(); // เรียกใช้ฟังก์ชัน logout จาก AuthContext เพื่อเคลียร์สถานะ authentication
-    navigate("/"); // จากนั้นค่อย navigate ไปหน้าแรก
+    logout();
+    navigate("/");
+  };
+
+  const dashboard = () => {
+    navigate("/dashboard");
+    closeSidebar();
   };
 
   const handleBack = () => {
@@ -28,10 +34,8 @@ function Navbar() {
 
   return (
     <div className="app-container">
-      {/* Modern Navbar */}
       <nav className="modern-navbar">
         <div className="navbar-left">
-          {/* Hamburger Button */}
           <button
             className="hamburger-btn"
             type="button"
@@ -45,15 +49,32 @@ function Navbar() {
             </div>
           </button>
           
-          {/* Brand Text */}
-          <h1 className="brand-text">
+          <h1 
+            className="brand-text" 
+            onClick={(e) => {
+              e.preventDefault(); // ป้องกัน default behavior
+              dashboard(); // เรียกฟังก์ชัน dashboard
+            }}
+            style={{
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              userSelect: 'none' // ป้องกันการเลือกข้อความ
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'scale(1.05)';
+              e.target.style.textShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'scale(1)';
+              e.target.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+            }}
+            title="กลับไปหน้า Dashboard"
+          >
             ✨ Unifind Project
           </h1>
         </div>
 
-        {/* User Info และ Logout Button */}
         <div className="d-flex align-items-center gap-3">
-          {/* แสดงข้อมูลผู้ใช้ */}
           {currentUser && (
             <div className="text-white d-none d-md-block">
               <small>สวัสดี, </small>
@@ -116,15 +137,7 @@ function Navbar() {
                   </a>
                 </li>
                 
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="/lostitemfrom"
-                    onClick={closeSidebar}
-                  >
-                    ➕ Add Item
-                  </a>
-                </li>
+                
                 
                 <li className="nav-item">
                   <a
@@ -186,9 +199,10 @@ function Navbar() {
           </div>
         </aside>
 
-        {/* Main Content Area */}
+        
         <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
           <Outlet />
+          <FloatingAddButton />
         </main>
       </div>
     </div>

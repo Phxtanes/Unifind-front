@@ -14,18 +14,43 @@ const RemovedItemsList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedLocker, setSelectedLocker] = useState("");
+  
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  
+  const [filters, setFilters] = useState({
+    date: "",
+    locker: "",
+    category: "",
+    place: "",
+    searchTerm: "",
+    receiver: ""
+  });
+
+  const categories = [
+    "อุปกรณ์อิเล็กทรอนิกส์",
+    "กระเป๋า", 
+    "เงินสด", 
+    "แว่นตา",
+    "นาฬิกา", 
+    "กุญแจ", 
+    "เอกสาร", 
+    "แหวน/กำไล/ต่างหู",
+    "เสื้อ", 
+    "หมวก", 
+    "รองเท้า",
+    "อื่นๆ"
+  ];
 
   const fetchItems = () => {
     setLoading(true);
     const params = {};
 
-    if (selectedDate) {
-      params.date = selectedDate;
+    if (filters.date) {
+      params.date = filters.date;
     }
-    if (selectedLocker) {
-      params.locker = selectedLocker;
+    if (filters.locker) {
+      params.locker = filters.locker;
     }
 
     axios
@@ -43,7 +68,7 @@ const RemovedItemsList = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [selectedDate, selectedLocker]);
+  }, [filters.date, filters.locker]);
 
   useEffect(() => {
     if (location.state && location.state.updated) {
@@ -57,16 +82,218 @@ const RemovedItemsList = () => {
       setTimeout(() => {
         if ($.fn.DataTable.isDataTable("#itemsTable")) {
           $("#itemsTable").DataTable().destroy();
-          fetchItems();
         }
+
+        const style = document.createElement('style');
+        style.textContent = `
+          .top-pagination .dataTables_paginate {
+            float: right !important;
+            margin-top: 0 !important;
+          }
+          .top-pagination .dataTables_info {
+            float: left !important;
+            margin-top: 0 !important;
+            padding-top: 8px;
+          }
+          .top-pagination .dataTables_length {
+            float: left !important;
+            margin-right: 20px !important;
+          }
+          .top-controls {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 15px !important;
+            padding: 10px 0 !important;
+          }
+          .left-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+          }
+          .right-controls {
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+          }
+          
+          /* CSS สำหรับ Image Modal */
+          .image-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 20px;
+          }
+          
+          .image-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          }
+          
+          .image-modal img {
+            width: 100%;
+            height: auto;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 4px;
+          }
+          
+          .close-button {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 40px;
+            height: 40px;
+            background: #ff4757;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+          }
+          
+          .close-button:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+          }
+          
+          .image-thumbnail {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+          }
+          
+          .image-thumbnail:hover {
+            transform: scale(1.05);
+            border-color: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+          }
+        `;
+        document.head.appendChild(style);
+
         $("#itemsTable").DataTable({
           columnDefs: [
-            { targets: [0], orderable: false },
+            { targets: [0, 8], orderable: false },
           ],
+           pageLength: 20,
+          lengthMenu: [[20, 50, 100, 150,"ทั้งหมด"], [20, 50, 100, 150, "ทั้งหมด"]],
+          language: {
+            lengthMenu: "แสดง _MENU_ รายการต่อหน้า",
+            zeroRecords: "ไม่พบข้อมูลที่ตรงกับการค้นหา",
+            info: "แสดงหน้า _PAGE_ จาก _PAGES_ (รวม _TOTAL_ รายการ)",
+            infoEmpty: "ไม่มีข้อมูล",
+            infoFiltered: "(กรองจากทั้งหมด _MAX_ รายการ)",
+            search: "ค้นหา:",
+            paginate: {
+              first: "หน้าแรก",
+              last: "หน้าสุดท้าย",
+              next: "ถัดไป",
+              previous: "ก่อนหน้า"
+            }
+          },
+          dom: `
+            <"top-controls"
+              <"left-controls"
+                l
+                i
+              >
+              <"right-controls"
+                f
+                p
+              >
+            >
+            rt
+          `,
+          drawCallback: function() {
+            $('.top-controls').addClass('top-pagination');
+          }
         });
       }, 500);
     }
   }, [loading, error, items]);
+
+  // ฟังก์ชันเปิด Image Modal
+  const openImageModal = (imageData) => {
+    setSelectedImage(imageData);
+    setShowImageModal(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  // ฟังก์ชันปิด Image Modal
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImage(null);
+    document.body.style.overflow = 'auto';
+  };
+
+  // ฟังก์ชันจัดการ Filter
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
+
+  // ฟังก์ชันรีเซ็ต Filter
+  const resetFilters = () => {
+    setFilters({
+      date: "",
+      locker: "",
+      category: "",
+      place: "",
+      searchTerm: "",
+      receiver: ""
+    });
+  };
+
+  // ฟังก์ชันกรองข้อมูลแบบ Local
+  const getFilteredItems = () => {
+    let filteredItems = [...items];
+
+    if (filters.category) {
+      filteredItems = filteredItems.filter(item => 
+        item.category === filters.category
+      );
+    }
+
+    if (filters.place) {
+      filteredItems = filteredItems.filter(item => 
+        item.place && item.place.toLowerCase().includes(filters.place.toLowerCase())
+      );
+    }
+
+    if (filters.searchTerm) {
+      filteredItems = filteredItems.filter(item => 
+        item.name && item.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      );
+    }
+
+    if (filters.receiver) {
+      filteredItems = filteredItems.filter(item => 
+        item.receiver && item.receiver.toLowerCase().includes(filters.receiver.toLowerCase())
+      );
+    }
+
+    return filteredItems;
+  };
 
   const handleCheckboxChange = (id) => {
     setSelectedItems((prevSelected) =>
@@ -78,7 +305,7 @@ const RemovedItemsList = () => {
 
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedItems(items.map((item) => item.id));
+      setSelectedItems(getFilteredItems().map((item) => item.id));
     } else {
       setSelectedItems([]);
     }
@@ -90,10 +317,10 @@ const RemovedItemsList = () => {
       return;
     }
   
-    if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบสิ่งของที่เลือก?")) {
+    if (window.confirm(`คุณแน่ใจหรือไม่ว่าต้องการลบสิ่งของ ${selectedItems.length} รายการ?`)) {
       Promise.all(
         selectedItems.map((id) =>
-          axios.delete(`http://localhost:8080/api/lost-items/delete/${id}`, {  // เพิ่ม /api/lost-items
+          axios.delete(`http://localhost:8080/api/lost-items/delete/${id}`, {
             headers: { "Content-Type": "application/json" }
           })
         )
@@ -122,128 +349,418 @@ const RemovedItemsList = () => {
     return `${day}/${month}/${year}`;
   };
 
-  return (
-    <div className="container-fluid mt-4"style={{borderRadius: '10px',boxShadow: '0 0 5px rgba(0,0,0,0.2)'}}>
-      <div className="container text-center pt-4 ">
+  const getFinderTypeText = (type) => {
+    switch(type) {
+      case "student": return "นักศึกษา";
+      case "employee": return "พนักงาน";
+      case "outsider": return "บุคคลภายนอก";
+      default: return "ไม่ระบุ";
+    }
+  };
 
-          <h1 className="mb-0 fs-4 px-3 py-1 ">รายการสิ่งของที่ถูกนำออก</h1>
-          <hr></hr>
+  // Handle ESC key to close modal
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape' && showImageModal) {
+        closeImageModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [showImageModal]);
+
+  // นับจำนวนรายการที่แสดง
+  const filteredItems = getFilteredItems();
+  const totalItems = items.length;
+  const filteredCount = filteredItems.length;
+
+  return (
+    <div className="container-fluid mt-4" style={{borderRadius: '10px', boxShadow: '0 0 5px rgba(0,0,0,0.2)'}}>
+      
+      {/* Header */}
+      <div className="container text-center mt-4">
+        <h1 className="mb-0 fs-4 px-3 py-1 pt-4">รายการสิ่งของที่ถูกนำออก</h1>
+        <hr style={{width:'100%'}} />
       </div>
 
-      {loading ? (
-        <p className="text-center">กำลังโหลดข้อมูล...</p>
-      ) : error ? (
-        <p className="text-center text-danger">{error}</p>
-      ) : (
-        <>
-        <div className="d-flex justify-content-between align-items-center mt-3"></div>
-          <div className="d-flex align-items-center mb-3 justify-content-end">
-            <div className="me-3">
-              <select
-                value={selectedLocker}
-                onChange={(e) => setSelectedLocker(e.target.value)}
-                className="form-select"
-              >
-                <option value="">Locker</option>
-                <option value="1"> 1</option>
-                <option value="2"> 2</option>
-                <option value="3"> 3</option>
-                <option value="4"> 4</option>
-                <option value="5"> 5</option>
-                <option value="6"> 6</option>
-              </select>
-            </div>
-
-            <div>
-              <input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="form-control"
-              />
-            </div>
-          </div>
-        <div className="table-responsive">
-          <table
-            id="itemsTable"
-            className="table table-bordered table-hover table-striped table-sm text-center shadow-sm"
-            style={{
-              border: "2px solid #dee2e6",
-              borderRadius: "12px",
-              overflow: "hidden",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.05)",
-            }}
-          >
-            <thead className="thead-dark">
-              <tr>
-                <th className="text-center p-3">
-                  <input
-                    type="checkbox"
-                    checked={selectedItems.length === items.length && items.length > 0}
-                    onChange={handleSelectAll}
-                  />
-                </th>
-                <th className="text-center p-3">รูปภาพ</th>
-                <th className="text-center p-3">ชื่อสิ่งของ</th>
-                <th className="text-center p-3">ประเภท</th>
-                <th className="text-center p-3">วันที่พบ</th>
-                <th className="text-center p-3">ล็อคเกอร์</th>
-                <th className="text-center p-3">สถานะ</th>
-                <th className="text-center p-3">รายละเอียด</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id} className="align-middle">
-                  <td className="text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedItems.includes(item.id)}
-                      onChange={() => handleCheckboxChange(item.id)}
-                    />
-                  </td>
-                  <td className="fs-5 p-2">
-                    {item.picture ? (
-                      <img
-                        src={`http://localhost:8080/api/lost-items/${item.id}/image`}
-                        alt={item.name}
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          objectFit: "cover",
-                          borderRadius: "10px",
-                          boxShadow: "0 0 5px rgba(0,0,0,0.2)",
-                        }}
-                        onError={(e) => (e.target.style.display = "none")}
-                      />
-                    ) : (
-                      "📷"
-                    )}
-                  </td>
-                  <td className="text-center p-2">{item.name}</td>
-                  <td className="text-center p-2">{item.category}</td>
-                  <td className="text-center p-2">{formatThaiDate(item.date)}</td>
-                  <td className="text-center p-2">{item.locker}</td>
-                  <td className="text-center p-2" style={{ color: "#FF0000" }}>
-                    {item.status}
-                  </td>
-                  <td className="p-2">
-                    <Link to={`/bin/${item.id}`} className="btn btn-danger btn-md rounded-pill shadow-sm">
-                      รายละเอียด
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="d-flex align-items-center mt-3 ml-3 mb-3">
-            <button onClick={handleDeleteSelected} className="btn btn-danger">
-              ลบออกจากถังขยะ
+      {/* Image Modal */}
+      {showImageModal && selectedImage && (
+        <div className="image-modal" onClick={closeImageModal}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-button" onClick={closeImageModal}>
+              ×
             </button>
+            <img 
+              src={selectedImage.url} 
+              alt={selectedImage.name}
+              style={{ maxWidth: '100%', maxHeight: '80vh' }}
+            />
+            <div className="text-center mt-3 p-2">
+              <h6 className="mb-1 text-danger">{selectedImage.name}</h6>
+              <small className="text-muted">{selectedImage.category}</small>
+            </div>
           </div>
         </div>
+      )}
+
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-danger" role="status">
+            <span className="visually-hidden">กำลังโหลด...</span>
+          </div>
+          <p className="mt-3 text-muted">กำลังโหลดข้อมูล...</p>
+        </div>
+      ) : error ? (
+        <div className="alert alert-danger text-center mx-3">
+          <h5>เกิดข้อผิดพลาด</h5>
+          <p className="mb-3">{error}</p>
+          <button className="btn btn-danger" onClick={fetchItems}>
+            ลองใหม่อีกครั้ง
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Filters Section */}
+          <div className="card mx-3 mb-4 border-0 shadow-sm">
+            <div className="card-header bg-light py-3">
+              <div className="d-flex justify-content-between align-items-center">
+                <h6 className="mb-0 fw-bold text-danger">
+                  <i className="fas fa-filter me-2"></i>ตัวกรองข้อมูล
+                </h6>
+                <div className="d-flex align-items-center gap-2">
+                  <span className="badge bg-danger">
+                    แสดง {filteredCount} จาก {totalItems} รายการ
+                  </span>
+                  <button 
+                    className="btn btn-outline-secondary btn-sm"
+                    onClick={resetFilters}
+                    title="รีเซ็ตตัวกรอง"
+                  >
+                    <i className="fas fa-times"></i> รีเซ็ต
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="card-body">
+              <div className="row g-3">
+                {/* ค้นหาชื่อสิ่งของ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-search me-1"></i>ค้นหาชื่อสิ่งของ
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="พิมพ์ชื่อสิ่งของ..."
+                    value={filters.searchTerm}
+                    onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+                  />
+                </div>
+
+                {/* หมวดหมู่ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-tags me-1"></i>หมวดหมู่
+                  </label>
+                  <select
+                    className="form-select"
+                    value={filters.category}
+                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                  >
+                    <option value="">ทุกหมวดหมู่</option>
+                    {categories.map((category, index) => (
+                      <option key={index} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* สถานที่พบ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-map-marker-alt me-1"></i>สถานที่พบ
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="พิมพ์สถานที่..."
+                    value={filters.place}
+                    onChange={(e) => handleFilterChange('place', e.target.value)}
+                  />
+                </div>
+
+                {/* ชื่อผู้รับ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-user me-1"></i>ชื่อผู้รับ
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="พิมพ์ชื่อผู้รับ..."
+                    value={filters.receiver}
+                    onChange={(e) => handleFilterChange('receiver', e.target.value)}
+                  />
+                </div>
+
+                {/* วันที่ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-calendar-alt me-1"></i>วันที่พบ
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={filters.date}
+                    onChange={(e) => handleFilterChange('date', e.target.value)}
+                  />
+                </div>
+
+                {/* ล็อคเกอร์ */}
+                <div className="col-lg-3 col-md-6">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-archive me-1"></i>ล็อคเกอร์
+                  </label>
+                  <select
+                    className="form-select"
+                    value={filters.locker}
+                    onChange={(e) => handleFilterChange('locker', e.target.value)}
+                  >
+                    <option value="">ทุกล็อคเกอร์</option>
+                    <option value="1">ล็อคเกอร์ 1</option>
+                    <option value="2">ล็อคเกอร์ 2</option>
+                    <option value="3">ล็อคเกอร์ 3</option>
+                    <option value="4">ล็อคเกอร์ 4</option>
+                    <option value="5">ล็อคเกอร์ 5</option>
+                    <option value="6">ล็อคเกอร์ 6</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Bar */}
+          <div className="mx-3 mb-3">
+            <div className="d-flex justify-content-between align-items-center">
+              <div className="d-flex align-items-center gap-3">
+                <button 
+                  onClick={handleDeleteSelected} 
+                  className="btn btn-danger"
+                  disabled={selectedItems.length === 0}
+                >
+                  <i className="fas fa-trash me-2"></i>
+                  ลบออกจากถังขยะ ({selectedItems.length})
+                </button>
+                {selectedItems.length > 0 && (
+                  <small className="text-muted">
+                    เลือกแล้ว {selectedItems.length} รายการ
+                  </small>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Table Section */}
+          <div className="mx-3 mb-4">
+            <div className="table-responsive">
+              <table
+                id="itemsTable"
+                className="table table-bordered table-hover table-striped table-sm text-center shadow-sm"
+                style={{
+                  border: '2px solid #dee2e6',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 4px 8px rgba(0,0,0,0.05)',
+                }}
+              >
+                <thead className="table-danger">
+                  <tr>
+                    <th className="text-center p-3" style={{width: '50px'}}>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.length === filteredItems.length && filteredItems.length > 0}
+                        onChange={handleSelectAll}
+                        title="เลือกทั้งหมด"
+                      />
+                    </th>
+                    <th className="text-center p-3" style={{width: '120px'}}>
+                      <i className="fas fa-image me-1"></i>รูปภาพ
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-box me-1"></i>ชื่อสิ่งของ
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-tags me-1"></i>ประเภท
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-calendar me-1"></i>วันที่พบ
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-archive me-1"></i>ล็อคเกอร์
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-user me-1"></i>ผู้รับ
+                    </th>
+                    <th className="text-center p-3">
+                      <i className="fas fa-info-circle me-1"></i>สถานะ
+                    </th>
+                    <th className="text-center p-3" style={{width: '100px'}}>
+                      <i className="fas fa-eye me-1"></i>รายละเอียด
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredItems.map((item) => (
+                    <tr key={item.id} className="align-middle">
+                      <td className="text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.id)}
+                          onChange={() => handleCheckboxChange(item.id)}
+                        />
+                      </td>
+                      <td className="p-2">
+                        {item.picture ? (
+                          <img
+                            src={`http://localhost:8080/api/lost-items/${item.id}/image`}
+                            alt={item.name}
+                            className="rounded shadow-sm image-thumbnail"
+                            style={{
+                              width: '80px',
+                              height: '80px',
+                              objectFit: 'cover',
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
+                            onClick={() => openImageModal({
+                              url: `http://localhost:8080/api/lost-items/${item.id}/image`,
+                              name: item.name,
+                              category: item.category
+                            })}
+                          />
+                        ) : null}
+                        {/* <div 
+                          className="d-flex align-items-center justify-content-center bg-light rounded"
+                          style={{
+                            width: '80px',
+                            height: '80px',
+                            display: item.picture ? 'none' : 'flex'
+                          }}
+                        >
+                          <i className="fas fa-image text-muted fa-2x"></i>
+                        </div> */}
+                      </td>
+                      <td className="text-center p-2 fw-semibold">{item.name}</td>
+                      <td className="text-center p-2">
+                        <span className="badge bg-info text-dark">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td className="text-center p-2">{formatThaiDate(item.date)}</td>
+                      <td className="text-center p-2">
+                        <span className="badge bg-secondary">
+                          <i className="fas fa-archive me-1"></i>
+                          {item.locker || 'ไม่ระบุ'}
+                        </span>
+                      </td>
+                      <td className="text-center p-2">
+                        <div className="d-flex flex-column align-items-center gap-1">
+                          <span className="fw-bold text-success">
+                            <i className="fas fa-user me-1"></i>
+                            {item.receiver || 'ไม่ระบุ'}
+                          </span>
+                          {item.staffName && (
+                            <small className="text-muted">
+                              <i className="fas fa-user-tie me-1"></i>
+                              เจ้าหน้าที่: {item.staffName}
+                            </small>
+                          )}
+                        </div>
+                      </td>
+                      <td className="text-center p-2">
+                        <span className="badge bg-danger">
+                          <i className="fas fa-check-circle me-1"></i>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="p-2">
+                        <Link 
+                          to={`/bin/${item.id}`} 
+                          className="btn btn-outline-danger btn-sm rounded-pill shadow-sm"
+                          title="ดูรายละเอียด"
+                        >Details
+                          <i className="fas fa-eye"></i>
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* แสดงข้อความเมื่อไม่มีข้อมูล */}
+              {filteredItems.length === 0 && (
+                <div className="text-center py-5">
+                  <i className="fas fa-search fa-3x text-muted mb-3"></i>
+                  <h5 className="text-muted">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</h5>
+                  <p className="text-muted">ลองปรับเปลี่ยนตัวกรองหรือคำค้นหา</p>
+                  <button 
+                    className="btn btn-outline-danger"
+                    onClick={resetFilters}
+                  >
+                    <i className="fas fa-times me-2"></i>ล้างตัวกรอง
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Summary Card */}
+          <div className="mx-3 mb-4">
+            <div className="card border-0 shadow-sm bg-light">
+              <div className="card-body py-3">
+                <div className="row text-center">
+                  <div className="col-md-3">
+                    <div className="d-flex align-items-center justify-content-center">
+                      <i className="fas fa-box text-danger me-2"></i>
+                      <span className="fw-bold">ทั้งหมด: </span>
+                      <span className="ms-1 text-danger fw-bold">{totalItems}</span>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="d-flex align-items-center justify-content-center">
+                      <i className="fas fa-filter text-success me-2"></i>
+                      <span className="fw-bold">กรองแล้ว: </span>
+                      <span className="ms-1 text-success fw-bold">{filteredCount}</span>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="d-flex align-items-center justify-content-center">
+                      <i className="fas fa-users text-info me-2"></i>
+                      <span className="fw-bold">ผู้รับที่แตกต่าง: </span>
+                      <span className="ms-1 text-info fw-bold">
+                        {[...new Set(items.filter(item => item.receiver).map(item => item.receiver))].length}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="d-flex align-items-center justify-content-center">
+                      <i className="fas fa-calendar text-warning me-2"></i>
+                      <span className="fw-bold">วันที่ล่าสุด: </span>
+                      <span className="ms-1 text-warning fw-bold">
+                        {items.length > 0 ? formatThaiDate(Math.max(...items.map(item => new Date(item.date)))) : 'ไม่มี'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </>
       )}
     </div>
