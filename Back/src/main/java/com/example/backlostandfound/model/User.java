@@ -22,13 +22,15 @@ public class User {
 
     private LocalDateTime createdAt;
     private Boolean isActive;
-    private String role; // "admin", "staff", "user"
+    private String role; // "admin", "staff", "member"
+    private Boolean isApproved; // สำหรับการอนุมัติผู้ใช้ใหม่
 
     public User() {
         this.id = UUID.randomUUID().toString();
         this.createdAt = LocalDateTime.now();
         this.isActive = true; // ค่าเริ่มต้นเป็น active
-        this.role = "staff"; // ค่าเริ่มต้นเป็น staff
+        this.role = "member"; // ค่าเริ่มต้นเป็น member (รอการอนุมัติ)
+        this.isApproved = false; // ค่าเริ่มต้นยังไม่ได้รับการอนุมัติ
     }
 
     public User(String username, String password, String email, String role) {
@@ -36,7 +38,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.email = email;
-        this.role = role != null ? role : "staff";
+        // ถ้าเป็น admin ให้อนุมัติอัตโนมัติ, ถ้าไม่ใช่ให้เป็น member และรอการอนุมัติ
+        if ("admin".equals(role)) {
+            this.role = role;
+            this.isApproved = true;
+        } else {
+            this.role = "member";
+            this.isApproved = false;
+        }
     }
 
     // Getters และ Setters
@@ -96,6 +105,14 @@ public class User {
         this.role = role;
     }
 
+    public Boolean getIsApproved() {
+        return isApproved;
+    }
+
+    public void setIsApproved(Boolean isApproved) {
+        this.isApproved = isApproved;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -105,6 +122,7 @@ public class User {
                 ", createdAt=" + createdAt +
                 ", isActive=" + isActive +
                 ", role='" + role + '\'' +
+                ", isApproved=" + isApproved +
                 '}';
     }
 }

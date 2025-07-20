@@ -4,9 +4,11 @@ import { useAuth } from '../AuthContext';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
+  const [pendingUsers, setPendingUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [activeTab, setActiveTab] = useState('all'); // 'all' หรือ 'pending'
   const { currentUser } = useAuth();
 
   // ตรวจสอบสิทธิ์ Admin
@@ -16,8 +18,12 @@ const UserManagement = () => {
       setLoading(false);
       return;
     }
-    fetchUsers();
+    fetchData();
   }, [currentUser]);
+
+  const fetchData = async () => {
+    await Promise.all([fetchUsers(), fetchPendingUsers()]);
+  };
 
   const fetchUsers = async () => {
     try {
@@ -33,12 +39,53 @@ const UserManagement = () => {
     }
   };
 
+  const fetchPendingUsers = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/auth/users/pending');
+      setPendingUsers(response.data);
+    } catch (err) {
+      console.error('Error fetching pending users:', err);
+    }
+  };
+
+  const handleApproveUser = async (userId) => {
+    try {
+      const response = await axios.put(`http://localhost:8080/api/auth/user/${userId}/approve`);
+      if (response.data.success) {
+        setSuccess('อนุมัติผู้ใช้เป็นเจ้าหน้าที่สำเร็จ');
+        fetchData(); // รีเฟรชข้อมูล
+        setTimeout(() => setSuccess(''), 3000);
+      }
+    } catch (err) {
+      setError('ไม่สามารถอนุมัติผู้ใช้ได้');
+      console.error('Error approving user:', err);
+      setTimeout(() => setError(''), 3000);
+    }
+  };
+
+  const handleRejectUser = async (userId) => {
+    if (window.confirm('คุณต้องการปฏิเสธการขอเป็นเจ้าหน้าที่นี้หรือไม่?')) {
+      try {
+        const response = await axios.put(`http://localhost:8080/api/auth/user/${userId}/reject`);
+        if (response.data.success) {
+          setSuccess('ปฏิเสธการขอเป็นเจ้าหน้าที่สำเร็จ');
+          fetchData(); // รีเฟรชข้อมูล
+          setTimeout(() => setSuccess(''), 3000);
+        }
+      } catch (err) {
+        setError('ไม่สามารถปฏิเสธการขอเป็นเจ้าหน้าที่ได้');
+        console.error('Error rejecting user:', err);
+        setTimeout(() => setError(''), 3000);
+      }
+    }
+  };
+
   const handleActivateUser = async (userId) => {
     try {
       const response = await axios.put(`http://localhost:8080/api/auth/user/${userId}/activate`);
       if (response.data.success) {
         setSuccess('เปิดการใช้งานผู้ใช้สำเร็จ');
-        fetchUsers(); // รีเฟรชข้อมูล
+        fetchData(); // รีเฟรชข้อมูล
         setTimeout(() => setSuccess(''), 3000);
       }
     } catch (err) {
@@ -54,7 +101,7 @@ const UserManagement = () => {
         const response = await axios.put(`http://localhost:8080/api/auth/user/${userId}/deactivate`);
         if (response.data.success) {
           setSuccess('ปิดการใช้งานผู้ใช้สำเร็จ');
-          fetchUsers(); // รีเฟรชข้อมูล
+          fetchData(); // รีเฟรชข้อมูล
           setTimeout(() => setSuccess(''), 3000);
         }
       } catch (err) {
@@ -71,7 +118,7 @@ const UserManagement = () => {
         const response = await axios.delete(`http://localhost:8080/api/auth/user/${userId}`);
         if (response.data.success) {
           setSuccess('ลบผู้ใช้สำเร็จ');
-          fetchUsers(); // รีเฟรชข้อมูล
+          fetchData(); // รีเฟรชข้อมูล
           setTimeout(() => setSuccess(''), 3000);
         }
       } catch (err) {
@@ -98,7 +145,7 @@ const UserManagement = () => {
     switch(role) {
       case 'admin': return 'ผู้ดูแลระบบ';
       case 'staff': return 'เจ้าหน้าที่';
-      case 'user': return 'ผู้ใช้';
+      case 'member': return 'สมาชิก';
       default: return role || 'ไม่ระบุ';
     }
   };
@@ -107,9 +154,22 @@ const UserManagement = () => {
     switch(role) {
       case 'admin': return 'bg-danger';
       case 'staff': return 'bg-primary';
-      case 'user': return 'bg-secondary';
+      case 'member': return 'bg-info';
       default: return 'bg-secondary';
     }
+  };
+
+  const getApprovalStatus = (user) => {
+    if (user.role === 'admin') {
+      return { text: 'อนุมัติแล้ว', class: 'bg-success' };
+    }
+    if (user.role === 'staff' && user.isApproved) {
+      return { text: 'อนุมัติแล้ว', class: 'bg-success' };
+    }
+    if (user.role === 'member') {
+      return { text: 'รอการอนุมัติ', class: 'bg-warning' };
+    }
+    return { text: 'ปฏิเสธ', class: 'bg-danger' };
   };
 
   if (currentUser?.role !== 'admin') {
@@ -136,18 +196,25 @@ const UserManagement = () => {
     );
   }
 
+  const currentUsers = activeTab === 'all' ? users : pendingUsers;
+
   return (
     <div className="container-fluid p-4" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 className="h3 mb-0 fw-bold" style={{ color: '#2F318B' }}>
-          👥 จัดการผู้ใช้
+          👥 จัดการผู้ใช้งาน
         </h1>
         <div className="d-flex align-items-center gap-3">
-          <button className="btn btn-outline-primary btn-sm" onClick={fetchUsers}>
+          <button className="btn btn-outline-primary btn-sm" onClick={fetchData}>
             🔄 รีเฟรช
           </button>
-          <span className="text-muted">จำนวนผู้ใช้ทั้งหมด: {users.length} คน</span>
+          <span className="text-muted">ผู้ใช้ทั้งหมด: {users.length} คน</span>
+          {pendingUsers.length > 0 && (
+            <span className="badge bg-warning fs-6">
+              รอการอนุมัติ: {pendingUsers.length} คน
+            </span>
+          )}
         </div>
       </div>
 
@@ -166,11 +233,36 @@ const UserManagement = () => {
         </div>
       )}
 
+      {/* Tabs */}
+      <div className="mb-4">
+        <ul className="nav nav-tabs">
+          <li className="nav-item">
+            <button 
+              className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}
+              onClick={() => setActiveTab('all')}
+            >
+              ผู้ใช้ทั้งหมด ({users.length})
+            </button>
+          </li>
+          <li className="nav-item">
+            <button 
+              className={`nav-link ${activeTab === 'pending' ? 'active' : ''}`}
+              onClick={() => setActiveTab('pending')}
+            >
+              รอการอนุมัติ 
+              {pendingUsers.length > 0 && (
+                <span className="badge bg-warning ms-2">{pendingUsers.length}</span>
+              )}
+            </button>
+          </li>
+        </ul>
+      </div>
+
       {/* Users Table */}
       <div className="card border-0 shadow-sm">
         <div className="card-header bg-white py-3 border-0">
           <h5 className="card-title mb-0 fw-bold" style={{ color: '#2F318B' }}>
-            รายการผู้ใช้ในระบบ
+            {activeTab === 'all' ? 'รายการผู้ใช้ในระบบ' : 'รายการผู้ใช้ที่รอการอนุมัติเป็นเจ้าหน้าที่'}
           </h5>
         </div>
         <div className="card-body p-0">
@@ -183,91 +275,126 @@ const UserManagement = () => {
                   <th className="py-3">Email</th>
                   <th className="py-3">บทบาท</th>
                   <th className="py-3">สถานะ</th>
+                  <th className="py-3">การอนุมัติ</th>
                   <th className="py-3">วันที่สมัคร</th>
                   <th className="py-3 text-center">การจัดการ</th>
                 </tr>
               </thead>
               <tbody>
-                {users.length > 0 ? (
-                  users.map((user, index) => (
-                    <tr key={user.id}>
-                      <td className="py-3 px-4 fw-bold text-muted">{index + 1}</td>
-                      <td className="py-3">
-                        <div className="d-flex align-items-center">
-                          <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                               style={{ width: '40px', height: '40px' }}>
-                            {user.username.charAt(0).toUpperCase()}
+                {currentUsers.length > 0 ? (
+                  currentUsers.map((user, index) => {
+                    const approvalStatus = getApprovalStatus(user);
+                    return (
+                      <tr key={user.id}>
+                        <td className="py-3 px-4 fw-bold text-muted">{index + 1}</td>
+                        <td className="py-3">
+                          <div className="d-flex align-items-center">
+                            <div className="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                                 style={{ width: '40px', height: '40px' }}>
+                              {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="fw-bold">{user.username}</div>
+                              {user.id === currentUser?.id && (
+                                <small className="text-primary">
+                                  👤 คุณ
+                                </small>
+                              )}
+                            </div>
                           </div>
-                          <div>
-                            <div className="fw-bold">{user.username}</div>
-                            {user.id === currentUser?.id && (
-                              <small className="text-primary">
-                                👤 คุณ
-                              </small>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3">{user.email}</td>
-                      <td className="py-3">
-                        <span className={`badge ${getRoleBadgeClass(user.role)} fs-6`}>
-                          {getRoleText(user.role)}
-                        </span>
-                      </td>
-                      <td className="py-3">
-                        {user.isActive ? (
-                          <span className="badge bg-success fs-6">
-                            ✅ ใช้งานได้
+                        </td>
+                        <td className="py-3">{user.email}</td>
+                        <td className="py-3">
+                          <span className={`badge ${getRoleBadgeClass(user.role)} fs-6`}>
+                            {getRoleText(user.role)}
                           </span>
-                        ) : (
-                          <span className="badge bg-danger fs-6">
-                            ❌ ปิดการใช้งาน
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3">
-                        <small className="text-muted">
-                          {formatDate(user.createdAt)}
-                        </small>
-                      </td>
-                      <td className="py-3 text-center">
-                        <div className="btn-group" role="group">
+                        </td>
+                        <td className="py-3">
                           {user.isActive ? (
-                            <button
-                              className="btn btn-outline-warning btn-sm"
-                              onClick={() => handleDeactivateUser(user.id)}
-                              disabled={user.id === currentUser?.id}
-                              title={user.id === currentUser?.id ? "ไม่สามารถปิดการใช้งานตัวเองได้" : "ปิดการใช้งาน"}
-                            >
-                              🚫
-                            </button>
+                            <span className="badge bg-success fs-6">
+                              ✅ ใช้งานได้
+                            </span>
                           ) : (
-                            <button
-                              className="btn btn-outline-success btn-sm"
-                              onClick={() => handleActivateUser(user.id)}
-                              title="เปิดการใช้งาน"
-                            >
-                              ✅
-                            </button>
+                            <span className="badge bg-danger fs-6">
+                              ❌ ปิดการใช้งาน
+                            </span>
                           )}
-                          
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => handleDeleteUser(user.id)}
-                            disabled={user.id === currentUser?.id}
-                            title={user.id === currentUser?.id ? "ไม่สามารถลบตัวเองได้" : "ลบผู้ใช้"}
-                          >
-                            🗑️
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </td>
+                        <td className="py-3">
+                          <span className={`badge ${approvalStatus.class} fs-6`}>
+                            {approvalStatus.text}
+                          </span>
+                        </td>
+                        <td className="py-3">
+                          <small className="text-muted">
+                            {formatDate(user.createdAt)}
+                          </small>
+                        </td>
+                        <td className="py-3 text-center">
+                          <div className="btn-group" role="group">
+                            {/* ปุ่มอนุมัติ/ปฏิเสธ สำหรับ member ที่รอการอนุมัติ */}
+                            {user.role === 'member' && (
+                              <>
+                                <button
+                                  className="btn btn-outline-success btn-sm"
+                                  onClick={() => handleApproveUser(user.id)}
+                                  title="อนุมัติเป็นเจ้าหน้าที่"
+                                >
+                                  ✅ อนุมัติ
+                                </button>
+                                <button
+                                  className="btn btn-outline-danger btn-sm"
+                                  onClick={() => handleRejectUser(user.id)}
+                                  title="ปฏิเสธ"
+                                >
+                                  ❌ ปฏิเสธ
+                                </button>
+                              </>
+                            )}
+                            
+                            {/* ปุ่มเปิด/ปิดการใช้งาน สำหรับ staff */}
+                            {user.role === 'staff' && (
+                              <>
+                                {user.isActive ? (
+                                  <button
+                                    className="btn btn-outline-warning btn-sm"
+                                    onClick={() => handleDeactivateUser(user.id)}
+                                    disabled={user.id === currentUser?.id}
+                                    title={user.id === currentUser?.id ? "ไม่สามารถปิดการใช้งานตัวเองได้" : "ปิดการใช้งาน"}
+                                  >
+                                    🚫
+                                  </button>
+                                ) : (
+                                  <button
+                                    className="btn btn-outline-success btn-sm"
+                                    onClick={() => handleActivateUser(user.id)}
+                                    title="เปิดการใช้งาน"
+                                  >
+                                    ✅
+                                  </button>
+                                )}
+                              </>
+                            )}
+                            
+                            {/* ปุ่มลบ */}
+                            <button
+                              className="btn btn-outline-danger btn-sm"
+                              onClick={() => handleDeleteUser(user.id)}
+                              disabled={user.id === currentUser?.id}
+                              title={user.id === currentUser?.id ? "ไม่สามารถลบตัวเองได้" : "ลบผู้ใช้"}
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="7" className="text-center py-5">
+                    <td colSpan="8" className="text-center py-5">
                       <div className="text-muted">
-                        👥 ไม่มีข้อมูลผู้ใช้
+                        {activeTab === 'all' ? '👥 ไม่มีข้อมูลผู้ใช้' : '⏳ ไม่มีผู้ใช้ที่รอการอนุมัติ'}
                       </div>
                     </td>
                   </tr>
@@ -292,9 +419,19 @@ const UserManagement = () => {
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
               <h3 className="text-success mb-1">
-                {users.filter(user => user.isActive).length}
+                {users.filter(user => user.isActive && user.role === 'staff').length}
               </h3>
-              <p className="text-muted mb-0">กำลังใช้งาน</p>
+              <p className="text-muted mb-0">เจ้าหน้าที่ใช้งาน</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card border-0 shadow-sm text-center">
+            <div className="card-body">
+              <h3 className="text-warning mb-1">
+                {pendingUsers.length}
+              </h3>
+              <p className="text-muted mb-0">รอการอนุมัติ</p>
             </div>
           </div>
         </div>
@@ -308,13 +445,37 @@ const UserManagement = () => {
             </div>
           </div>
         </div>
-        <div className="col-md-3">
+      </div>
+
+      {/* Role Statistics */}
+      <div className="row mt-3">
+        <div className="col-md-4">
+          <div className="card border-0 shadow-sm text-center">
+            <div className="card-body">
+              <h3 className="text-info mb-1">
+                {users.filter(user => user.role === 'member').length}
+              </h3>
+              <p className="text-muted mb-0">สมาชิกทั้งหมด</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
               <h3 className="text-primary mb-1">
-                {users.filter(user => user.role === 'staff').length}
+                {users.filter(user => user.role === 'staff' && user.isApproved).length}
               </h3>
-              <p className="text-muted mb-0">เจ้าหน้าที่</p>
+              <p className="text-muted mb-0">เจ้าหน้าที่ที่อนุมัติแล้ว</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card border-0 shadow-sm text-center">
+            <div className="card-body">
+              <h3 className="text-warning mb-1">
+                {users.filter(user => user.role === 'member' && !user.isApproved).length}
+              </h3>
+              <p className="text-muted mb-0">รอการอนุมัติเป็นเจ้าหน้าที่</p>
             </div>
           </div>
         </div>

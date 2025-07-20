@@ -29,6 +29,7 @@ const FloatingAddButton = () => {
   const [file, setFile] = useState(null);
   const [imageUrl, setImageUrl] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hovered, setHovered] = useState(false);
   
   const categories = [
     "อุปกรณ์อิเล็กทรอนิกส์", "กระเป๋า", "เงินสด", "แว่นตา",
@@ -212,7 +213,26 @@ const FloatingAddButton = () => {
 
   return (
     <>
-      {/* Floating Add Button */}
+      {hovered && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '100px',
+            right: '30px',
+            backgroundColor: '#2F318B',
+            color: '#fff',
+            padding: '6px 12px',
+            borderRadius: '6px',
+            fontSize: '14px',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            zIndex: 1001,
+          }}
+        >
+          เพิ่มสิ่งของ 
+        </div>
+      )}
+
       <button
         onClick={openModal}
         className="btn btn-primary rounded-circle shadow-lg position-fixed"
@@ -225,23 +245,52 @@ const FloatingAddButton = () => {
           zIndex: 1000,
           border: 'none',
           background: 'linear-gradient(135deg, #2F318B 0%, #4F69C6 100%)',
-          boxShadow: '0 4px 20px rgba(47, 49, 139, 0.4)',
-          transition: 'all 0.3s ease'
+          boxShadow: hovered
+            ? '0 6px 25px rgba(47, 49, 139, 0.6)'
+            : '0 4px 20px rgba(47, 49, 139, 0.4)',
+          transform: hovered ? 'scale(1.1)' : 'scale(1)',
+          transition: 'all 0.3s ease',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
-        onMouseOver={(e) => {
-          e.target.style.transform = 'scale(1.1)';
-          e.target.style.boxShadow = '0 6px 25px rgba(47, 49, 139, 0.6)';
-        }}
-        onMouseOut={(e) => {
-          e.target.style.transform = 'scale(1)';
-          e.target.style.boxShadow = '0 4px 20px rgba(47, 49, 139, 0.4)';
-        }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         title="เพิ่มสิ่งของใหม่"
       >
-        <i className="fas fa-plus"></i>
+        <i
+          className="fas fa-plus"
+          style={{
+            transform: 'none',
+            pointerEvents: 'none',
+            color: '#fff',
+          }}
+        ></i>
       </button>
 
-      {/* Modal */}
+      {/* Left button back */}
+        {/* <button
+          onClick={() => window.history.back()}
+          className="btn btn-danger rounded-circle shadow-lg position-fixed"
+          style={{
+            bottom: '30px',
+            left: '30px',
+            width: '60px',
+            height: '60px',
+            fontSize: '24px',
+            zIndex: 1000,
+            border: 'none',
+            background: 'linear-gradient(135deg, #dc3545 0%, #e66c6c 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'all 0.3s ease',
+          }}
+          title="ย้อนกลับ"
+          >
+          <i className="fas fa-arrow-left" style={{ color: '#fff' }}></i>
+        </button> */}
+
       {showModal && (
         <div 
           className="modal fade show d-block" 
@@ -257,6 +306,7 @@ const FloatingAddButton = () => {
               <div className="modal-header" style={{ background: 'linear-gradient(135deg, #2F318B 0%, #A2AFDF 100%)', color: 'white' }}>
                 <h5 className="modal-title">
                   <i className="fas fa-plus-circle me-2"></i>
+                  
                   แจ้งนำสิ่งของเข้า
                 </h5>
                 <button 

@@ -34,8 +34,17 @@ public interface UserRepository extends MongoRepository<User, String> {
     // ค้นหาผู้ใช้ที่ active และมี role ที่กำหนด
     List<User> findByIsActiveAndRole(Boolean isActive, String role);
 
-    // ค้นหาผู้ใช้สำหรับการ login (active เท่านั้น)
-    Optional<User> findByUsernameAndIsActive(String username, Boolean isActive);
+    // ค้นหาผู้ใช้สำหรับการ login (active และ approved เท่านั้น)
+    Optional<User> findByUsernameAndIsActiveAndIsApproved(String username, Boolean isActive, Boolean isApproved);
 
-    Optional<User> findByEmailAndIsActive(String email, Boolean isActive);
+    Optional<User> findByEmailAndIsActiveAndIsApproved(String email, Boolean isActive, Boolean isApproved);
+
+    // ค้นหาผู้ใช้ที่รอการอนุมัติ
+    List<User> findByIsApproved(Boolean isApproved);
+
+    // ค้นหาผู้ใช้ที่รอการอนุมัติและ active
+    List<User> findByIsActiveAndIsApproved(Boolean isActive, Boolean isApproved);
+
+    // ค้นหาผู้ใช้ตาม role และสถานะการอนุมัติ
+    List<User> findByRoleAndIsApproved(String role, Boolean isApproved);
 }

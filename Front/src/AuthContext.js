@@ -25,8 +25,25 @@ export const AuthProvider = ({ children }) => {
     const userData = localStorage.getItem('currentUser');
     
     if (authStatus === 'true' && userData) {
-      setIsAuthenticated(true);
-      setCurrentUser(JSON.parse(userData));
+      try {
+        const user = JSON.parse(userData);
+        // ตรวจสอบว่าผู้ใช้ยังคงมีสิทธิ์เข้าใช้งานหรือไม่อย่างเข้มงวด
+        // เฉพาะ admin หรือ staff ที่ได้รับการอนุมัติแล้วเท่านั้น
+        // ห้าม member เข้าสู่ระบบโดยเด็ดขาด
+        if (user && user.isActive && 
+            ((user.role === 'admin') || 
+             (user.role === 'staff' && user.isApproved === true))) {
+          setIsAuthenticated(true);
+          setCurrentUser(user);
+        } else {
+          // ถ้าไม่มีสิทธิ์แล้ว ให้ logout
+          console.log('User does not have permission to access system:', user?.role, 'approved:', user?.isApproved);
+          logout();
+        }
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        logout();
+      }
     }
     setLoading(false);
   }, []);
@@ -40,10 +57,12 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (response.data.success) {
+        const user = response.data.user;
+        
         setIsAuthenticated(true);
-        setCurrentUser(response.data.user);
+        setCurrentUser(user);
         localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('currentUser', JSON.stringify(response.data.user));
+        localStorage.setItem('currentUser', JSON.stringify(user));
         return { success: true, message: response.data.message };
       } else {
         return { success: false, message: response.data.message };
@@ -61,10 +80,19 @@ export const AuthProvider = ({ children }) => {
   // ฟังก์ชัน register
   const register = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/register', userData);
+      // กำหนดให้ผู้ใช้ใหม่เป็น member เสมอ
+      const registerData = {
+        ...userData,
+        role: 'member'
+      };
+
+      const response = await axios.post('http://localhost:8080/api/auth/register', registerData);
 
       if (response.data.success) {
-        return { success: true, message: response.data.message };
+        return { 
+          success: true, 
+          message: 'สมัครสมาชิกสำเร็จ กรุณารอการอนุมัติจากผู้ดูแลระบบเพื่อเป็นเจ้าหน้าที่' 
+        };
       } else {
         return { success: false, message: response.data.message };
       }
@@ -92,6 +120,32 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('currentUser', JSON.stringify(userData));
   };
 
+  // ฟังก์ชันตรวจสอบสิทธิ์
+  const hasPermission = (requiredRole) => {
+    if (!currentUser) return false;
+    
+    const roleHierarchy = {
+      'member': 0, // member ไม่สามารถเข้าถึงอะไรได้
+      'staff': 1,
+      'admin': 2
+    };
+
+    const userLevel = roleHierarchy[currentUser.role] || 0;
+    const requiredLevel = roleHierarchy[requiredRole] || 0;
+
+    return userLevel >= requiredLevel;
+  };
+
+  // ฟังก์ชันตรวจสอบว่าเป็น admin หรือไม่
+  const isAdmin = () => {
+    return currentUser?.role === 'admin';
+  };
+
+  // ฟังก์ชันตรวจสอบว่าเป็น staff หรือสูงกว่าหรือไม่
+  const isStaffOrAbove = () => {
+    return hasPermission('staff');
+  };
+
   const value = {
     isAuthenticated,
     currentUser,
@@ -99,6 +153,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     updateCurrentUser,
+    hasPermission,
+    isAdmin,
+    isStaffOrAbove,
     loading
   };
 

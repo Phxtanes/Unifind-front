@@ -15,7 +15,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    // สมัครสมาชิกใหม่
+    // สมัครสมาชิกใหม่ (เป็น member ก่อน รอการอนุมัติ)
     public User registerUser(User user) {
         // ตรวจสอบว่า username หรือ email มีอยู่แล้วหรือไม่
         if (userRepository.existsByUsername(user.getUsername())) {
@@ -29,26 +29,53 @@ public class UserService {
         // เข้ารหัสรหัสผ่านด้วย PasswordUtil
         user.setPassword(PasswordUtil.encodePassword(user.getPassword()));
 
+        // สำหรับผู้ใช้ใหม่ที่สมัครผ่านหน้าเว็บ จะเป็น member และรอการอนุมัติ
+        user.setRole("member");
+        user.setIsApproved(false);
+
         return userRepository.save(user);
     }
 
-    // ล็อกอิน
+    // ล็อกอิน - เฉพาะ staff และ admin ที่ approved เท่านั้น
     public User authenticateUser(String usernameOrEmail, String password) {
         Optional<User> userOpt;
 
         // ค้นหาผู้ใช้ด้วย username หรือ email
         if (usernameOrEmail.contains("@")) {
-            userOpt = userRepository.findByEmailAndIsActive(usernameOrEmail, true);
+            userOpt = userRepository.findByEmail(usernameOrEmail);
         } else {
-            userOpt = userRepository.findByUsernameAndIsActive(usernameOrEmail, true);
+            userOpt = userRepository.findByUsername(usernameOrEmail);
         }
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            // ตรวจสอบรหัสผ่านด้วย PasswordUtil
-            if (PasswordUtil.verifyPassword(password, user.getPassword())) {
-                return user;
+
+            // ตรวจสอบรหัสผ่านก่อน
+            if (!PasswordUtil.verifyPassword(password, user.getPassword())) {
+                throw new RuntimeException("Username/Email หรือ Password ไม่ถูกต้อง");
             }
+
+            // ตรวจสอบว่าบัญชียังใช้งานได้หรือไม่
+            if (!user.getIsActive()) {
+                throw new RuntimeException("บัญชีของคุณถูกปิดการใช้งาน กรุณาติดต่อผู้ดูแลระบบ");
+            }
+
+            //  ห้าม member เข้าสู่ระบบโดยเด็ดขาด
+            if ("member".equals(user.getRole())) {
+                throw new RuntimeException("บัญชีของคุณยังไม่ได้รับการอนุมัติจากผู้ดูแลระบบ กรุณารอการอนุมัติเพื่อเป็นเจ้าหน้าที่");
+            }
+
+            //  ตรวจสอบ staff ที่ยังไม่ได้รับการอนุมัติ
+            if ("staff".equals(user.getRole()) && !user.getIsApproved()) {
+                throw new RuntimeException("บัญชีของคุณยังไม่ได้รับการอนุมัติ กรุณารอการอนุมัติจากผู้ดูแลระบบ");
+            }
+
+            // ตรวจสอบว่าเป็น admin หรือ staff ที่ได้รับการอนุมัติแล้วเท่านั้น
+            if (!("admin".equals(user.getRole()) || ("staff".equals(user.getRole()) && user.getIsApproved()))) {
+                throw new RuntimeException("คุณไม่มีสิทธิ์เข้าสู่ระบบ กรุณาติดต่อผู้ดูแลระบบ");
+            }
+
+            return user;
         }
 
         throw new RuntimeException("Username/Email หรือ Password ไม่ถูกต้อง");
@@ -74,6 +101,44 @@ public class UserService {
         return userRepository.findByIsActive(true);
     }
 
+    // ดึงรายการผู้ใช้ที่รอการอนุมัติ (member ที่รอเป็น staff)
+    public List<User> getPendingApprovalUsers() {
+        return userRepository.findByRoleAndIsApproved("member", false);
+    }
+
+    // อนุมัติผู้ใช้ (เปลี่ยนจาก member เป็น staff)
+    public User approveUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบผู้ใช้"));
+
+        // ตรวจสอบว่าเป็น member ที่รอการอนุมัติหรือไม่
+        if (!"member".equals(user.getRole())) {
+            throw new RuntimeException("ไม่สามารถอนุมัติผู้ใช้นี้ได้ เนื่องจากไม่ได้อยู่ในสถานะรอการอนุมัติ");
+        }
+
+        // เปลี่ยนจาก member เป็น staff และอนุมัติ
+        user.setRole("staff");
+        user.setIsApproved(true);
+
+        return userRepository.save(user);
+    }
+
+    // ปฏิเสธการอนุมัติผู้ใช้ (ยังคงเป็น member แต่ไม่อนุมัติ)
+    public User rejectUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("ไม่พบผู้ใช้"));
+
+        // ตรวจสอบว่าเป็น member ที่รอการอนุมัติหรือไม่
+        if (!"member".equals(user.getRole())) {
+            throw new RuntimeException("ไม่สามารถปฏิเสธผู้ใช้นี้ได้ เนื่องจากไม่ได้อยู่ในสถานะรอการอนุมัติ");
+        }
+
+        // ยังคงเป็น member แต่ปฏิเสธการอนุมัติ
+        user.setIsApproved(false);
+
+        return userRepository.save(user);
+    }
+
     // อัปเดตข้อมูลผู้ใช้
     public User updateUser(String id, User userDetails) {
         User user = userRepository.findById(id)
@@ -90,11 +155,28 @@ public class UserService {
         }
 
         if (userDetails.getRole() != null) {
+            String oldRole = user.getRole();
             user.setRole(userDetails.getRole());
+
+            // จัดการสิทธิ์ตาม role ใหม่
+            if ("admin".equals(userDetails.getRole())) {
+                user.setIsApproved(true); // admin อนุมัติอัตโนมัติ
+            } else if ("member".equals(userDetails.getRole())) {
+                user.setIsApproved(false); // member ไม่อนุมัติ
+            } else if ("staff".equals(userDetails.getRole())) {
+                // ถ้าเปลี่ยนเป็น staff และเดิมไม่ใช่ staff ให้ต้องอนุมัติใหม่
+                if (!"staff".equals(oldRole)) {
+                    user.setIsApproved(false);
+                }
+            }
         }
 
         if (userDetails.getIsActive() != null) {
             user.setIsActive(userDetails.getIsActive());
+        }
+
+        if (userDetails.getIsApproved() != null) {
+            user.setIsApproved(userDetails.getIsApproved());
         }
 
         return userRepository.save(user);

@@ -19,7 +19,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // สมัครสมาชิก
+    // สมัครสมาชิก (สำหรับเจ้าหน้าที่)
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
@@ -50,7 +50,7 @@ public class UserController {
             newUser.setPassword(null);
 
             response.put("success", true);
-            response.put("message", "สมัครสมาชิกสำเร็จ");
+            response.put("message", "สมัครสมาชิกสำเร็จ กรุณารอการอนุมัติจากผู้ดูแลระบบเพื่อเป็นเจ้าหน้าที่");
             response.put("user", newUser);
 
             return ResponseEntity.ok(response);
@@ -118,6 +118,15 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    // ดึงข้อมูลผู้ใช้ที่รอการอนุมัติ (สำหรับ admin)
+    @GetMapping("/users/pending")
+    public ResponseEntity<List<User>> getPendingApprovalUsers() {
+        List<User> users = userService.getPendingApprovalUsers();
+        // ลบรหัสผ่านออกจากการส่งกลับ
+        users.forEach(user -> user.setPassword(null));
+        return ResponseEntity.ok(users);
+    }
+
     // ดึงข้อมูลผู้ใช้ตาม ID
     @GetMapping("/user/{id}")
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable String id) {
@@ -135,6 +144,58 @@ public class UserController {
                 response.put("message", "ไม่พบผู้ใช้");
                 return ResponseEntity.notFound().build();
             }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "เกิดข้อผิดพลาดในระบบ");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // อนุมัติผู้ใช้ (เปลี่ยนจาก member เป็น staff)
+    @PutMapping("/user/{id}/approve")
+    public ResponseEntity<Map<String, Object>> approveUser(@PathVariable String id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            User user = userService.approveUser(id);
+            user.setPassword(null);
+
+            response.put("success", true);
+            response.put("message", "อนุมัติผู้ใช้เป็นเจ้าหน้าที่สำเร็จ");
+            response.put("user", user);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "เกิดข้อผิดพลาดในระบบ");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    // ปฏิเสธการอนุมัติผู้ใช้
+    @PutMapping("/user/{id}/reject")
+    public ResponseEntity<Map<String, Object>> rejectUser(@PathVariable String id) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            User user = userService.rejectUser(id);
+            user.setPassword(null);
+
+            response.put("success", true);
+            response.put("message", "ปฏิเสธการขอเป็นเจ้าหน้าที่สำเร็จ");
+            response.put("user", user);
+
+            return ResponseEntity.ok(response);
+
+        } catch (RuntimeException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
         } catch (Exception e) {
             response.put("success", false);
             response.put("message", "เกิดข้อผิดพลาดในระบบ");

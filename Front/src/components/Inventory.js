@@ -615,7 +615,7 @@ const InventoryList = () => {
                           to={`/edit/${item.id}`}
                           className="btn btn-warning btn-sm rounded-pill shadow-sm"
                           title="แก้ไขข้อมูล"
-                        >Edit
+                        >
                           <i className="fas fa-edit"></i>
                         </Link>
                       </td>
@@ -624,7 +624,7 @@ const InventoryList = () => {
                           to={`/remove/${item.id}`}
                           className="btn btn-danger btn-sm rounded-pill shadow-sm"
                           title="นำสิ่งของออก"
-                        >Remove
+                        >
                           <i className="fas fa-sign-out-alt"></i>
                         </Link>
                       </td>

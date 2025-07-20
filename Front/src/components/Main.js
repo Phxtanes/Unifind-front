@@ -10,7 +10,6 @@ function Main() {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("staff");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -83,29 +82,29 @@ function Main() {
     }
 
     // เรียกใช้ฟังก์ชัน register จาก AuthContext
+    // ผู้ใช้ใหม่จะเป็น member เสมอ
     const result = await register({
       username: username.trim(),
       password: password.trim(),
       email: email.trim(),
-      role: role
+      role: "member" // กำหนดเป็น member เสมอ
     });
 
     setLoading(false);
 
     if (result.success) {
-      setSuccess("สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ");
+      setSuccess("สมัครสมาชิกสำเร็จ! กรุณารอการอนุมัติจากผู้ดูแลระบบเพื่อเป็นเจ้าหน้าที่");
       // รีเซ็ตฟอร์ม
       setUsername("");
       setPassword("");
       setEmail("");
       setConfirmPassword("");
-      setRole("staff");
-      // แสดงหน้า login หลังจากสมัครสำเร็จ
+      // แสดงข้อความสำเร็จแล้วกลับหน้าแรก
       setTimeout(() => {
         setShowRegister(false);
-        setShowLogin(true);
+        setShowLogin(false);
         setSuccess("");
-      }, 2000);
+      }, 4000);
     } else {
       setError(result.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
     }
@@ -116,7 +115,6 @@ function Main() {
     setPassword("");
     setEmail("");
     setConfirmPassword("");
-    setRole("staff");
     setError("");
     setSuccess("");
     setShowLogin(false);
@@ -164,10 +162,10 @@ function Main() {
               เข้าสู่ระบบ (สำหรับเจ้าหน้าที่)
             </button>
             <br />
-            {/* <button onClick={() => setShowRegister(true)} className="btn btn-secondary" style={{
+            <button onClick={() => setShowRegister(true)} className="btn btn-secondary" style={{
               padding: '12px 24px',
               fontSize: '16px',
-              backgroundColor: '#6c757d',
+              backgroundColor: '#28a745',
               color: 'white',
               border: 'none',
               borderRadius: '12px',
@@ -175,8 +173,8 @@ function Main() {
               transition: 'all 0.3s ease',
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
             }}>
-              สมัครสมาชิก
-            </button> */}
+              สมัครสมาชิก (ขอเป็นเจ้าหน้าที่)
+            </button>
           </div>
         )}
 
@@ -184,6 +182,9 @@ function Main() {
         {showLogin && !showRegister && (
           <div className="login-container">
             <h4 className="login-title">== เข้าสู่ระบบ ==</h4>
+            <p className="text-center text-muted mb-3" style={{ fontSize: '14px' }}>
+              สำหรับเจ้าหน้าที่และผู้ดูแลระบบ
+            </p>
             
             {error && (
               <div className="error-message">
@@ -250,6 +251,9 @@ function Main() {
         {showRegister && !showLogin && (
           <div className="login-container">
             <h4 className="login-title">== สมัครสมาชิก ==</h4>
+            <p className="text-center text-muted mb-3" style={{ fontSize: '14px' }}>
+              ขอเป็นเจ้าหน้าที่ (รอการอนุมัติจากผู้ดูแลระบบ)
+            </p>
             
             {error && (
               <div className="error-message">
@@ -296,15 +300,6 @@ function Main() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={loading}
               />
-              <select
-                className="login-input"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                disabled={loading}
-              >
-                <option value="staff">เจ้าหน้าที่</option>
-                <option value="admin">ผู้ดูแลระบบ</option>
-              </select>
               
               <div className="login-options">
                 <span 

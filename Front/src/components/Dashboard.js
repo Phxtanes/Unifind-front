@@ -418,7 +418,7 @@ const Dashboard = () => {
             <div className="card-body p-4">
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '1rem', letterSpacing: '0.5px' }}>
                     รายการทั้งหมด (เดือนนี้)
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.thisMonth}</h2>
@@ -436,13 +436,13 @@ const Dashboard = () => {
             <div className="card-body p-4">
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '1rem', letterSpacing: '0.5px' }}>
                     เก็บในคลัง (รวมทั้งหมด)
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.storedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#2F51FF' }}>
-                  <i className="fas fa-warehouse fa-lg" style={{ color: '#4CAF50' }}></i>
+                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                  <i className="fas fa-warehouse fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
             </div>
@@ -454,13 +454,13 @@ const Dashboard = () => {
             <div className="card-body p-4">
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '1rem', letterSpacing: '0.5px' }}>
                     รอดำเนินการ
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.storedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#37D026' }}>
-                  <i className="fas fa-clock fa-lg" style={{ color: '#FF9800' }}></i>
+                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                  <i className="fas fa-clock fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
             </div>
@@ -472,13 +472,13 @@ const Dashboard = () => {
             <div className="card-body p-4">
               <div className="d-flex align-items-center justify-content-between">
                 <div>
-                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                  <p className="text-uppercase text-muted mb-1 fw-bold" style={{ fontSize: '1rem', letterSpacing: '0.5px' }}>
                     สิ่งของที่นำออกแล้ว
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.removedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#FF2121' }}>
-                  <i className="fas fa-check-circle fa-lg" style={{ color: '#FF9800' }}></i>
+                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                  <i className="fas fa-check-circle fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
             </div>

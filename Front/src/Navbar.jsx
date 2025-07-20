@@ -32,6 +32,32 @@ function Navbar() {
     setIsSidebarOpen(false);
   };
 
+  // ฟังก์ชันแปลงชื่อ role เป็นภาษาไทย
+  const getRoleText = (role) => {
+    switch(role) {
+      case 'admin': return 'ผู้ดูแลระบบ';
+      case 'staff': return 'เจ้าหน้าที่';
+      case 'member': return 'สมาชิก';
+      default: return 'ผู้ใช้';
+    }
+  };
+
+  // ฟังก์ชันตรวจสอบสิทธิ์การเข้าถึงเมนู
+  const canAccess = (requiredRole) => {
+    if (!currentUser) return false;
+    
+    const roleHierarchy = {
+      'member': 1,
+      'staff': 2,
+      'admin': 3
+    };
+
+    const userLevel = roleHierarchy[currentUser.role] || 0;
+    const requiredLevel = roleHierarchy[requiredRole] || 0;
+
+    return userLevel >= requiredLevel;
+  };
+
   return (
     <div className="app-container">
       <nav className="modern-navbar">
@@ -80,7 +106,7 @@ function Navbar() {
               <small>สวัสดี, </small>
               <span className="fw-bold">{currentUser.username}</span>
               <small className="ms-2 opacity-75">
-                ({currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'เจ้าหน้าที่'})
+                ({getRoleText(currentUser.role)})
               </small>
             </div>
           )}
@@ -118,7 +144,7 @@ function Navbar() {
                   <span className="fw-bold">{currentUser.username}</span>
                   <br />
                   <small className="text-muted">
-                    บทบาท: {currentUser.role === 'admin' ? 'ผู้ดูแลระบบ' : 'เจ้าหน้าที่'}
+                    บทบาท: {getRoleText(currentUser.role)}
                   </small>
                 </div>
               )}
@@ -127,6 +153,7 @@ function Navbar() {
             {/* Navigation Menu */}
             <nav>
               <ul className="nav-menu">
+                {/* Dashboard - ทุกคนเข้าถึงได้ */}
                 <li className="nav-item">
                   <a
                     className="nav-link"
@@ -137,30 +164,34 @@ function Navbar() {
                   </a>
                 </li>
                 
-                
-                
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="/inventory"
-                    onClick={closeSidebar}
-                  >
-                    📦 Inventory
-                  </a>
-                </li>
+                {/* Inventory - สำหรับ member ขึ้นไป */}
+                {canAccess('member') && (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href="/inventory"
+                      onClick={closeSidebar}
+                    >
+                      📦 Inventory
+                    </a>
+                  </li>
+                )}
 
-                <li className="nav-item">
-                  <a
-                    className="nav-link"
-                    href="/reports"
-                    onClick={closeSidebar}
-                  >
-                    📊 Reports
-                  </a>
-                </li>
+                {/* Reports - สำหรับ staff ขึ้นไป */}
+                {canAccess('staff') && (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href="/reports"
+                      onClick={closeSidebar}
+                    >
+                      📊 Reports
+                    </a>
+                  </li>
+                )}
                 
-                {/* แสดงเมนู User Management เฉพาะ Admin */}
-                {currentUser?.role === 'admin' && (
+                {/* User Management - สำหรับ admin เท่านั้น */}
+                {canAccess('admin') && (
                   <li className="nav-item">
                     <a
                       className="nav-link"
@@ -171,21 +202,61 @@ function Navbar() {
                     </a>
                   </li>
                 )}
+
+                {/* เมนูเพิ่มเติมสำหรับ member */}
+                {currentUser?.role === 'member' && (
+                  <>
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        href="/my-items"
+                        onClick={closeSidebar}
+                      >
+                        📝 รายการของฉัน
+                      </a>
+                    </li>
+                    <li className="nav-item">
+                      <a
+                        className="nav-link"
+                        href="/profile"
+                        onClick={closeSidebar}
+                      >
+                        👤 ข้อมูลส่วนตัว
+                      </a>
+                    </li>
+                  </>
+                )}
+
+                {/* เมนูเพิ่มเติมสำหรับ staff */}
+                {canAccess('staff') && currentUser?.role !== 'admin' && (
+                  <li className="nav-item">
+                    <a
+                      className="nav-link"
+                      href="/manage-items"
+                      onClick={closeSidebar}
+                    >
+                      ⚙️ จัดการรายการ
+                    </a>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>
 
           {/* Sidebar Actions */}
           <div className="sidebar-actions">
-            <button
-              className="action-btn trash-btn"
-              onClick={() => {
-                navigate("/removed");
-                closeSidebar();
-              }}
-            >
-              🗑️ ถังขยะ
-            </button>
+            {/* ถังขยะ - สำหรับ staff ขึ้นไป */}
+            {canAccess('staff') && (
+              <button
+                className="action-btn trash-btn"
+                onClick={() => {
+                  navigate("/removed");
+                  closeSidebar();
+                }}
+              >
+                🗑️ ถังขยะ
+              </button>
+            )}
             
             <button
               className="action-btn back-btn"
@@ -196,13 +267,29 @@ function Navbar() {
             >
               ⬅️ ย้อนกลับ
             </button>
+
+            {/* ปุ่มออกจากระบบสำหรับ mobile */}
+            <button
+              className="action-btn logout-btn-mobile d-md-none"
+              onClick={() => {
+                handleLogout();
+                closeSidebar();
+              }}
+              style={{
+                backgroundColor: '#dc3545',
+                color: 'white',
+                marginTop: '10px'
+              }}
+            >
+              🚪 ออกจากระบบ
+            </button>
           </div>
         </aside>
 
-        
         <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
           <Outlet />
-          <FloatingAddButton />
+          {/* แสดง FloatingAddButton เฉพาะ member ขึ้นไป */}
+          {canAccess('member') && <FloatingAddButton />}
         </main>
       </div>
     </div>
