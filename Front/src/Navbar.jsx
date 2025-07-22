@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import FloatingAddButton from "./components/FloatingAddButton"; 
@@ -8,20 +8,44 @@ import "./navbar.css";
 function Navbar() {
   const navigate = useNavigate();
   const { logout, currentUser } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      
+      // ปรับ sidebar behavior ตาม screen size
+      if (mobile) {
+        setIsSidebarOpen(false); // ปิด sidebar ใน mobile
+      } else {
+        setIsSidebarOpen(true); // เปิด sidebar ใน desktop
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = () => {
     logout();
     navigate("/");
+    setShowLogoutModal(false);
+  };
+
+  const openLogoutModal = () => {
+    setShowLogoutModal(true);
+  };
+
+  const closeLogoutModal = () => {
+    setShowLogoutModal(false);
   };
 
   const dashboard = () => {
     navigate("/dashboard");
-    closeSidebar();
-  };
-
-  const handleBack = () => {
-    navigate(-1);
+    if (isMobile) closeSidebar();
   };
 
   const toggleSidebar = () => {
@@ -60,8 +84,10 @@ function Navbar() {
 
   return (
     <div className="app-container">
-      <nav className="modern-navbar">
-        <div className="navbar-left">
+      {/* Top Bar */}
+      <nav className="top-bar">
+        <div className="top-bar-left">
+          {/* Hamburger button */}
           <button
             className="hamburger-btn"
             type="button"
@@ -78,13 +104,13 @@ function Navbar() {
           <h1 
             className="brand-text" 
             onClick={(e) => {
-              e.preventDefault(); // ป้องกัน default behavior
-              dashboard(); // เรียกฟังก์ชัน dashboard
+              e.preventDefault();
+              dashboard();
             }}
             style={{
               cursor: 'pointer',
               transition: 'all 0.3s ease',
-              userSelect: 'none' // ป้องกันการเลือกข้อความ
+              userSelect: 'none'
             }}
             onMouseEnter={(e) => {
               e.target.style.transform = 'scale(1.05)';
@@ -100,9 +126,9 @@ function Navbar() {
           </h1>
         </div>
 
-        <div className="d-flex align-items-center gap-3">
+        <div className="top-bar-right">
           {currentUser && (
-            <div className="text-white d-none d-md-block">
+            <div className="user-info">
               <small>สวัสดี, </small>
               <span className="fw-bold">{currentUser.username}</span>
               <small className="ms-2 opacity-75">
@@ -113,7 +139,7 @@ function Navbar() {
           
           <button
             className="logout-btn"
-            onClick={handleLogout}
+            onClick={openLogoutModal}
             aria-label="Logout"
           >
             ออกจากระบบ
@@ -121,177 +147,228 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* Sidebar Overlay */}
-      <div 
-        className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
-        onClick={closeSidebar}
-      ></div>
-
-      {/* Content Wrapper */}
-      <div className="content-wrapper">
-        {/* Modern Sidebar */}
-        <aside className={`modern-sidebar ${isSidebarOpen ? 'open' : ''}`}>
-          <div>
-            {/* Sidebar Header */}
-            <div className="sidebar-header">
-              <h6 className="sidebar-title">
-                📋 เมนูหลัก
-              </h6>
-              {/* แสดงข้อมูลผู้ใช้ใน sidebar สำหรับ mobile */}
-              {currentUser && (
-                <div className="d-md-none mt-2">
-                  <small className="text-muted">ผู้ใช้: </small>
-                  <span className="fw-bold">{currentUser.username}</span>
-                  <br />
-                  <small className="text-muted">
-                    บทบาท: {getRoleText(currentUser.role)}
-                  </small>
+      {/* Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  ยืนยันการออกจากระบบ
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeLogoutModal}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body text-center py-4">
+                <div className="mb-3">
+                  <i className="fas fa-exclamation-triangle text-warning" style={{ fontSize: '3rem' }}></i>
                 </div>
-              )}
+                <p className="mb-3">
+                  คุณต้องการออกจากระบบจริงหรือไม่?
+                </p>
+                <small className="text-muted">
+                  การออกจากระบบจะทำให้คุณต้องเข้าสู่ระบบใหม่อีกครั้ง
+                </small>
+              </div>
+              <div className="modal-footer justify-content-center">
+                <button
+                  type="button"
+                  className="btn btn-secondary px-4"
+                  onClick={closeLogoutModal}
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger px-4 ms-2"
+                  onClick={handleLogout}
+                >
+                  ออกจากระบบ
+                </button>
+              </div>
             </div>
-            
-            {/* Navigation Menu */}
-            <nav>
-              <ul className="nav-menu">
-                {/* Dashboard - ทุกคนเข้าถึงได้ */}
+          </div>
+        </div>
+      )}
+
+      {/* Sidebar Overlay for Mobile */}
+      {isMobile && (
+        <div 
+          className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`}
+          onClick={closeSidebar}
+        ></div>
+      )}
+
+      {/* Sidebar */}
+      <aside className={`main-sidebar ${isSidebarOpen ? 'open' : ''}`}>
+        <div className="sidebar-content">
+          {/* Sidebar Header */}
+          <div className="sidebar-header">
+            {/* <h6 className="sidebar-title">
+              📋 เมนูหลัก
+            </h6> */}
+            {/* แสดงข้อมูลผู้ใช้ใน sidebar สำหรับ mobile */}
+           {/*  {isMobile && currentUser && (
+              <div className="sidebar-user-info">
+                <small className="text-muted">ผู้ใช้: </small>
+                <span className="fw-bold">{currentUser.username}</span>
+                <br />
+                <small className="text-muted">
+                  บทบาท: {getRoleText(currentUser.role)}
+                </small>
+              </div>
+            )} */}
+          </div>
+          
+          {/* Navigation Menu */}
+          <nav className="sidebar-nav">
+            <ul className="nav-menu">
+              {/* Dashboard - ทุกคนเข้าถึงได้ */}
+              <li className="nav-item">
+                <a
+                  className="nav-link"
+                  href="/dashboard"
+                  onClick={(e) => {
+                    if (isMobile) closeSidebar();
+                  }}
+                >
+                  🏠 Dashboard
+                </a>
+              </li>
+              
+              {/* Inventory - สำหรับ member ขึ้นไป */}
+              {canAccess('member') && (
                 <li className="nav-item">
                   <a
                     className="nav-link"
-                    href="/dashboard"
-                    onClick={closeSidebar}
+                    href="/inventory"
+                    onClick={(e) => {
+                      if (isMobile) closeSidebar();
+                    }}
                   >
-                    🏠 Dashboard
+                    📦 คลังเก็บของ
                   </a>
                 </li>
-                
-                {/* Inventory - สำหรับ member ขึ้นไป */}
-                {canAccess('member') && (
+              )}
+
+              {/* Reports - สำหรับ staff ขึ้นไป */}
+              {canAccess('staff') && (
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/reports"
+                    onClick={(e) => {
+                      if (isMobile) closeSidebar();
+                    }}
+                  >
+                    📊 รายงาน
+                  </a>
+                </li>
+              )}
+
+              {/* สิ่งของที่ถูกนำออกแล้ว - สำหรับ staff ขึ้นไป */}
+              {canAccess('staff') && (
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/removed"
+                    onClick={(e) => {
+                      if (isMobile) closeSidebar();
+                    }}
+                  >
+                    🗑️ สิ่งของที่ถูกนำออกแล้ว
+                  </a>
+                </li>
+              )}
+              
+              {/* User Management - สำหรับ admin เท่านั้น */}
+              {canAccess('admin') && (
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/user-management"
+                    onClick={(e) => {
+                      if (isMobile) closeSidebar();
+                    }}
+                  >
+                    👥 จัดการผู้ใช้
+                  </a>
+                </li>
+              )}
+
+              {/* เมนูเพิ่มเติมสำหรับ member */}
+              {currentUser?.role === 'member' && (
+                <>
                   <li className="nav-item">
                     <a
                       className="nav-link"
-                      href="/inventory"
-                      onClick={closeSidebar}
+                      href="/my-items"
+                      onClick={(e) => {
+                        if (isMobile) closeSidebar();
+                      }}
                     >
-                      📦 Inventory
+                      📝 รายการของฉัน
                     </a>
                   </li>
-                )}
-
-                {/* Reports - สำหรับ staff ขึ้นไป */}
-                {canAccess('staff') && (
                   <li className="nav-item">
                     <a
                       className="nav-link"
-                      href="/reports"
-                      onClick={closeSidebar}
+                      href="/profile"
+                      onClick={(e) => {
+                        if (isMobile) closeSidebar();
+                      }}
                     >
-                      📊 Reports
+                      👤 ข้อมูลส่วนตัว
                     </a>
                   </li>
-                )}
-                
-                {/* User Management - สำหรับ admin เท่านั้น */}
-                {canAccess('admin') && (
-                  <li className="nav-item">
-                    <a
-                      className="nav-link"
-                      href="/user-management"
-                      onClick={closeSidebar}
-                    >
-                      👥 จัดการผู้ใช้
-                    </a>
-                  </li>
-                )}
+                </>
+              )}
 
-                {/* เมนูเพิ่มเติมสำหรับ member */}
-                {currentUser?.role === 'member' && (
-                  <>
-                    <li className="nav-item">
-                      <a
-                        className="nav-link"
-                        href="/my-items"
-                        onClick={closeSidebar}
-                      >
-                        📝 รายการของฉัน
-                      </a>
-                    </li>
-                    <li className="nav-item">
-                      <a
-                        className="nav-link"
-                        href="/profile"
-                        onClick={closeSidebar}
-                      >
-                        👤 ข้อมูลส่วนตัว
-                      </a>
-                    </li>
-                  </>
-                )}
+              {/* เมนูเพิ่มเติมสำหรับ staff */}
+              {canAccess('staff') && currentUser?.role !== 'admin' && (
+                <li className="nav-item">
+                  <a
+                    className="nav-link"
+                    href="/manage-items"
+                    onClick={(e) => {
+                      if (isMobile) closeSidebar();
+                    }}
+                  >
+                    ⚙️ จัดการรายการ
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </div>
 
-                {/* เมนูเพิ่มเติมสำหรับ staff */}
-                {canAccess('staff') && currentUser?.role !== 'admin' && (
-                  <li className="nav-item">
-                    <a
-                      className="nav-link"
-                      href="/manage-items"
-                      onClick={closeSidebar}
-                    >
-                      ⚙️ จัดการรายการ
-                    </a>
-                  </li>
-                )}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Sidebar Actions */}
-          <div className="sidebar-actions">
-            {/* ถังขยะ - สำหรับ staff ขึ้นไป */}
-            {canAccess('staff') && (
-              <button
-                className="action-btn trash-btn"
-                onClick={() => {
-                  navigate("/removed");
-                  closeSidebar();
-                }}
-              >
-                🗑️ ถังขยะ
-              </button>
-            )}
-            
+        {/* Sidebar Footer */}
+        <div className="sidebar-footer">
+          {/* ปุ่มออกจากระบบสำหรับ mobile */}
+          {isMobile && (
             <button
-              className="action-btn back-btn"
+              className="sidebar-logout-btn"
               onClick={() => {
-                handleBack();
+                openLogoutModal();
                 closeSidebar();
               }}
             >
-              ⬅️ ย้อนกลับ
+              ออกจากระบบ
             </button>
+          )}
+        </div>
+      </aside>
 
-            {/* ปุ่มออกจากระบบสำหรับ mobile */}
-            <button
-              className="action-btn logout-btn-mobile d-md-none"
-              onClick={() => {
-                handleLogout();
-                closeSidebar();
-              }}
-              style={{
-                backgroundColor: '#dc3545',
-                color: 'white',
-                marginTop: '10px'
-              }}
-            >
-              🚪 ออกจากระบบ
-            </button>
-          </div>
-        </aside>
-
-        <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-          <Outlet />
-          {/* แสดง FloatingAddButton เฉพาะ member ขึ้นไป */}
-          {canAccess('member') && <FloatingAddButton />}
-        </main>
-      </div>
+      {/* Main Content */}
+      <main className={`main-content ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+        <Outlet />
+        {/* แสดง FloatingAddButton เฉพาะ member ขึ้นไป */}
+        {canAccess('member') && <FloatingAddButton />}
+      </main>
     </div>
   );
 }

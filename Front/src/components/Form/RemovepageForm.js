@@ -293,7 +293,7 @@ const Removepage = () => {
                     color: '#555',
                     marginBottom: '6px'
                   }}>
-                    ชื่อผู้แจ้ง
+                    ชื่อผู้รับแจ้ง
                   </label>
                   <div style={{
                     width: '100%',

@@ -125,7 +125,7 @@ const Bin = () => {
                   <div className="form-control bg-light">{item.place}</div>
                 </div>
                 <div className="col-md-6 mb-3">
-                  <label className="form-label">ชื่อผู้แจ้ง<span className="red-star">*</span></label>
+                  <label className="form-label">ชื่อผู้รับแจ้ง<span className="red-star">*</span></label>
                   <div className="form-control bg-light">{item.namereport}</div>
                 </div>
               </div>

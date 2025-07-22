@@ -23,7 +23,8 @@ const InventoryList = () => {
     locker: "",
     category: "",
     place: "",
-    searchTerm: ""
+    searchTerm: "",
+    reporter: ""
   });
 
   // Categories สำหรับ dropdown
@@ -202,7 +203,6 @@ const InventoryList = () => {
             info: "แสดงหน้า _PAGE_ จาก _PAGES_ (รวม _TOTAL_ รายการ)",
             infoEmpty: "ไม่มีข้อมูล",
             infoFiltered: "(กรองจากทั้งหมด _MAX_ รายการ)",
-            search: "ค้นหา:",
             paginate: {
               first: "หน้าแรก",
               last: "หน้าสุดท้าย",
@@ -231,7 +231,7 @@ const InventoryList = () => {
         });
       }, 500);
     }
-  }, [loading, error, items]);
+  }, [loading, error, items]); 
 
   // ฟังก์ชันเปิด Image Modal
   const openImageModal = (imageData) => {
@@ -264,7 +264,8 @@ const InventoryList = () => {
       locker: "",
       category: "",
       place: "",
-      searchTerm: ""
+      searchTerm: "",
+      reporter: ""
     });
   };
 
@@ -291,6 +292,22 @@ const InventoryList = () => {
       filteredItems = filteredItems.filter(item => 
         item.name && item.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
       );
+    }
+
+    // กรองตาม ผู้รับแจ้ง(เจ้าหน้าที่)
+    if (filters.reporter) {
+      filteredItems = filteredItems.filter(item => {
+        const reporterFields = [
+          item.reporter,
+          item.reporterName,
+          item.finderName,
+          item.name 
+        ];
+        
+        return reporterFields.some(field => 
+          field && field.toLowerCase().includes(filters.reporter.toLowerCase())
+        );
+      });
     }
 
     return filteredItems;
@@ -410,7 +427,7 @@ const InventoryList = () => {
             <div className="card-body">
               <div className="row g-3">
                 {/* ค้นหาชื่อสิ่งของ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-search me-1"></i>ค้นหาชื่อสิ่งของ
                   </label>
@@ -424,7 +441,7 @@ const InventoryList = () => {
                 </div>
 
                 {/* หมวดหมู่ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-tags me-1"></i>หมวดหมู่
                   </label>
@@ -443,7 +460,7 @@ const InventoryList = () => {
                 </div>
 
                 {/* สถานที่พบ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-map-marker-alt me-1"></i>สถานที่พบ
                   </label>
@@ -456,8 +473,23 @@ const InventoryList = () => {
                   />
                 </div>
 
+                {/* ผู้รับแจ้ง - เพิ่มใหม่ */}
+                <div className="col-lg-2 col-md-4">
+                  <label className="form-label fw-semibold">
+                    <i className="fas fa-user-edit me-1"></i>ผู้รับแจ้ง
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="ชื่อผู้รับแจ้ง..."
+                    value={filters.reporter}
+                    onChange={(e) => handleFilterChange('reporter', e.target.value)}
+                    disabled
+                  />
+                </div>
+
                 {/* วันที่ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-calendar-alt me-1"></i>วันที่พบ
                   </label>
@@ -470,7 +502,7 @@ const InventoryList = () => {
                 </div>
 
                 {/* ล็อคเกอร์ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-archive me-1"></i>ล็อคเกอร์
                   </label>

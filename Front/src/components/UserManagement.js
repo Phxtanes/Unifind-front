@@ -196,7 +196,9 @@ const UserManagement = () => {
     );
   }
 
-  const currentUsers = activeTab === 'all' ? users : pendingUsers;
+  // กรองเฉพาะ admin และ staff สำหรับแท็บ "ผู้ใช้ทั้งหมด"
+  const filteredUsers = users.filter(user => user.role === 'admin' || user.role === 'staff');
+  const currentUsers = activeTab === 'all' ? filteredUsers : pendingUsers;
 
   return (
     <div className="container-fluid p-4" style={{ backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
@@ -209,7 +211,7 @@ const UserManagement = () => {
           <button className="btn btn-outline-primary btn-sm" onClick={fetchData}>
             🔄 รีเฟรช
           </button>
-          <span className="text-muted">ผู้ใช้ทั้งหมด: {users.length} คน</span>
+          <span className="text-muted">ผู้ใช้ทั้งหมด: {filteredUsers.length} คน</span>
           {pendingUsers.length > 0 && (
             <span className="badge bg-warning fs-6">
               รอการอนุมัติ: {pendingUsers.length} คน
@@ -241,7 +243,7 @@ const UserManagement = () => {
               className={`nav-link ${activeTab === 'all' ? 'active' : ''}`}
               onClick={() => setActiveTab('all')}
             >
-              ผู้ใช้ทั้งหมด ({users.length})
+              ผู้ใช้ทั้งหมด ({filteredUsers.length})
             </button>
           </li>
           <li className="nav-item">
@@ -406,11 +408,11 @@ const UserManagement = () => {
       </div>
 
       {/* Statistics Cards */}
-      <div className="row mt-4">
+      {/* <div className="row mt-4">
         <div className="col-md-3">
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
-              <h3 className="text-primary mb-1">{users.length}</h3>
+              <h3 className="text-primary mb-1">{filteredUsers.length}</h3>
               <p className="text-muted mb-0">ผู้ใช้ทั้งหมด</p>
             </div>
           </div>
@@ -419,7 +421,7 @@ const UserManagement = () => {
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
               <h3 className="text-success mb-1">
-                {users.filter(user => user.isActive && user.role === 'staff').length}
+                {filteredUsers.filter(user => user.isActive && user.role === 'staff').length}
               </h3>
               <p className="text-muted mb-0">เจ้าหน้าที่ใช้งาน</p>
             </div>
@@ -439,16 +441,16 @@ const UserManagement = () => {
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
               <h3 className="text-danger mb-1">
-                {users.filter(user => user.role === 'admin').length}
+                {filteredUsers.filter(user => user.role === 'admin').length}
               </h3>
               <p className="text-muted mb-0">ผู้ดูแลระบบ</p>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Role Statistics */}
-      <div className="row mt-3">
+      {/* <div className="row mt-3">
         <div className="col-md-4">
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
@@ -463,7 +465,7 @@ const UserManagement = () => {
           <div className="card border-0 shadow-sm text-center">
             <div className="card-body">
               <h3 className="text-primary mb-1">
-                {users.filter(user => user.role === 'staff' && user.isApproved).length}
+                {filteredUsers.filter(user => user.role === 'staff' && user.isApproved).length}
               </h3>
               <p className="text-muted mb-0">เจ้าหน้าที่ที่อนุมัติแล้ว</p>
             </div>
@@ -479,7 +481,7 @@ const UserManagement = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

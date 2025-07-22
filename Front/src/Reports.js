@@ -161,16 +161,16 @@ const Reports = () => {
 
   // Export เป็น CSV (สำหรับใช้กับ Excel)
   const exportToCSV = (data, filename) => {
-    const headers = ['วันที่', 'หมวดหมู่', 'ชื่อสิ่งของ', 'สถานที่พบ', 'ผู้พบ', 'สถานะ', 'ผู้รับ', 'เจ้าหน้าที่'];
+    const headers = ['วันที่', 'หมวดหมู่', 'ชื่อสิ่งของ', 'สถานที่พบ', 'ผู้พบ', 'สถานะ', 'ผู้รับแจ้ง', 'เจ้าหน้าที่'];
     
     const csvContent = [
       headers.join(','),
       ...data.map(item => [
         formatThaiDate(item.date),
         item.category || '',
-        `"${item.itemName || ''}"`,
-        item.location || '',
-        item.finder || '',
+        `"${item.name || ''}"`,
+        item.place || '',
+        item.finderType || '',
         item.status === 'stored' ? 'เก็บรักษา' : 'ส่งคืนแล้ว',
         item.receiver || '',
         item.staffName || ''
@@ -600,10 +600,10 @@ const Reports = () => {
                 </div>
               </div>
               <div className="card-body">
-                <div className="alert alert-warning">
+                {/* <div className="alert alert-warning">
                   <i className="fas fa-exclamation-triangle me-2"></i>
                   พบสิ่งของที่ไม่มีคนมารับทั้งหมด <strong>{unclaimedItems.length}</strong> รายการ
-                </div>
+                </div> */}
                 
                 {unclaimedItems.length > 0 ? (
                   <div className="table-responsive">
@@ -616,14 +616,14 @@ const Reports = () => {
                           <th>สถานที่พบ</th>
                           <th>ผู้พบ</th>
                           <th>จำนวนวันที่เก็บ</th>
-                          <th>สถานะ</th>
+                          {/* <th>สถานะ</th> */}
                         </tr>
                       </thead>
                       <tbody>
                         {unclaimedItems.map((item, index) => {
                           const daysDiff = Math.ceil((new Date() - new Date(item.date)) / (1000 * 60 * 60 * 24));
                           return (
-                            <tr key={index} className={daysDiff > 60 ? 'table-warning' : ''}>
+                            <tr key={index} className={daysDiff > 0 ? 'table-warning' : ''}>
                               <td>{formatThaiDate(item.date)}</td>
                               <td>{item.category || '-'}</td>
                               <td>{item.name || '-'}</td>
@@ -634,9 +634,9 @@ const Reports = () => {
                                   {daysDiff} วัน
                                 </span>
                               </td>
-                              <td>
+                              {/* <td>
                                 <span className="badge bg-success">เก็บรักษา</span>
-                              </td>
+                              </td> */}
                             </tr>
                           );
                         })}
@@ -770,7 +770,7 @@ const Reports = () => {
                     </div>
 
                     {/* Performance Details */}
-                    <div className="row">
+                    {/* <div className="row">
                       <div className="col-md-6">
                         <div className="card border-0 shadow-sm">
                           <div className="card-header bg-light">
@@ -839,10 +839,10 @@ const Reports = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* Recommendations */}
-                    <div className="row mt-4">
+                    {/* <div className="row mt-4">
                       <div className="col-12">
                         <div className="card border-0 shadow-sm">
                           <div className="card-header bg-light">
@@ -872,7 +872,7 @@ const Reports = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </>
                 ) : (
                   <div className="text-center py-4">

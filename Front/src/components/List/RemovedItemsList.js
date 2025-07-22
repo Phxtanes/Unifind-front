@@ -24,7 +24,8 @@ const RemovedItemsList = () => {
     category: "",
     place: "",
     searchTerm: "",
-    receiver: ""
+    receiver: "",
+    reporter: ""
   });
 
   const categories = [
@@ -260,7 +261,8 @@ const RemovedItemsList = () => {
       category: "",
       place: "",
       searchTerm: "",
-      receiver: ""
+      receiver: "",
+      reporter: ""
     });
   };
 
@@ -284,6 +286,21 @@ const RemovedItemsList = () => {
       filteredItems = filteredItems.filter(item => 
         item.name && item.name.toLowerCase().includes(filters.searchTerm.toLowerCase())
       );
+    }
+
+    if (filters.reporter) {
+      filteredItems = filteredItems.filter(item => {
+        const reporterFields = [
+          item.reporter,
+          item.reporterName,
+          item.finderName,
+          item.name 
+        ];
+        
+        return reporterFields.some(field => 
+          field && field.toLowerCase().includes(filters.reporter.toLowerCase())
+        );
+      });
     }
 
     if (filters.receiver) {
@@ -427,11 +444,11 @@ const RemovedItemsList = () => {
           <div className="card mx-3 mb-4 border-0 shadow-sm">
             <div className="card-header bg-light py-3">
               <div className="d-flex justify-content-between align-items-center">
-                <h6 className="mb-0 fw-bold text-danger">
+                <h6 className="mb-0 fw-bold text-primary">
                   <i className="fas fa-filter me-2"></i>ตัวกรองข้อมูล
                 </h6>
                 <div className="d-flex align-items-center gap-2">
-                  <span className="badge bg-danger">
+                  <span className="badge bg-primary">
                     แสดง {filteredCount} จาก {totalItems} รายการ
                   </span>
                   <button 
@@ -447,7 +464,7 @@ const RemovedItemsList = () => {
             <div className="card-body">
               <div className="row g-3">
                 {/* ค้นหาชื่อสิ่งของ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-search me-1"></i>ค้นหาชื่อสิ่งของ
                   </label>
@@ -461,7 +478,7 @@ const RemovedItemsList = () => {
                 </div>
 
                 {/* หมวดหมู่ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-tags me-1"></i>หมวดหมู่
                   </label>
@@ -480,7 +497,7 @@ const RemovedItemsList = () => {
                 </div>
 
                 {/* สถานที่พบ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-map-marker-alt me-1"></i>สถานที่พบ
                   </label>
@@ -493,22 +510,23 @@ const RemovedItemsList = () => {
                   />
                 </div>
 
-                {/* ชื่อผู้รับ */}
-                <div className="col-lg-3 col-md-6">
+                {/* ผู้รับแจ้ง - เพิ่มใหม่ */}
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
-                    <i className="fas fa-user me-1"></i>ชื่อผู้รับ
+                    <i className="fas fa-user-edit me-1"></i>ผู้รับแจ้ง
                   </label>
                   <input
                     type="text"
                     className="form-control"
-                    placeholder="พิมพ์ชื่อผู้รับ..."
-                    value={filters.receiver}
-                    onChange={(e) => handleFilterChange('receiver', e.target.value)}
+                    placeholder="ชื่อผู้รับแจ้ง..."
+                    value={filters.reporter}
+                    onChange={(e) => handleFilterChange('reporter', e.target.value)}
+                    disabled
                   />
                 </div>
 
                 {/* วันที่ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-calendar-alt me-1"></i>วันที่พบ
                   </label>
@@ -521,7 +539,7 @@ const RemovedItemsList = () => {
                 </div>
 
                 {/* ล็อคเกอร์ */}
-                <div className="col-lg-3 col-md-6">
+                <div className="col-lg-2 col-md-4">
                   <label className="form-label fw-semibold">
                     <i className="fas fa-archive me-1"></i>ล็อคเกอร์
                   </label>
@@ -553,7 +571,7 @@ const RemovedItemsList = () => {
                   disabled={selectedItems.length === 0}
                 >
                   <i className="fas fa-trash me-2"></i>
-                  ลบออกจากถังขยะ ({selectedItems.length})
+                  ลบออกจากระบบ ({selectedItems.length})
                 </button>
                 {selectedItems.length > 0 && (
                   <small className="text-muted">

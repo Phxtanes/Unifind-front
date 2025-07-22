@@ -273,18 +273,45 @@ const Dashboard = () => {
           strokeLinejoin="round"
         />
         
-        {/* Points */}
+        {/* Points and Value Labels */}
         {data.map((d, i) => {
           const x = padding + (i / (data.length - 1)) * chartWidth;
           const y = padding + chartHeight - ((d.value - minValue) / (maxValue - minValue || 1)) * chartHeight;
           return (
-            <circle
-              key={i}
-              cx={x}
-              cy={y}
-              r="4"
-              fill="#2F318B"
-            />
+            <g key={i}>
+              {/* Point */}
+              <circle
+                cx={x}
+                cy={y}
+                r="5"
+                fill="#2F318B"
+                stroke="white"
+                strokeWidth="2"
+              />
+              
+              {/* Value Label Background */}
+              <rect
+                x={x - 12}
+                y={y - 25}
+                width="24"
+                height="16"
+                fill="rgba(47, 49, 139, 0.9)"
+                rx="8"
+                ry="8"
+              />
+              
+              {/* Value Label Text */}
+              <text
+                x={x}
+                y={y - 15}
+                textAnchor="middle"
+                fontSize="11"
+                fontWeight="bold"
+                fill="white"
+              >
+                {d.value}
+              </text>
+            </g>
           );
         })}
         
@@ -423,7 +450,7 @@ const Dashboard = () => {
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.thisMonth}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                <div className="p-3 rounded" >
                   <i className="fas fa-calendar-alt fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
@@ -441,7 +468,7 @@ const Dashboard = () => {
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.storedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                <div className="p-3 rounded" >
                   <i className="fas fa-warehouse fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
@@ -459,7 +486,7 @@ const Dashboard = () => {
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.storedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                <div className="p-3 rounded" s>
                   <i className="fas fa-clock fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
@@ -477,7 +504,7 @@ const Dashboard = () => {
                   </p>
                   <h2 className="mb-0 fw-bold">{stats.removedItems}</h2>
                 </div>
-                <div className="p-3 rounded" style={{ backgroundColor: '#8C8C8E' }}>
+                <div className="p-3 rounded">
                   <i className="fas fa-check-circle fa-lg" style={{ color: '#2F318B' }}></i>
                 </div>
               </div>
@@ -561,7 +588,7 @@ const Dashboard = () => {
       {/* New Section: Top Stats & Latest Items */}
       <div className="row g-4 mb-4">
         {/* Top 3 Categories */}
-        <div className="col-xl-4 col-lg-4">
+        {/* <div className="col-xl-4 col-lg-4">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-header bg-white py-3 border-0">
               <h5 className="card-title mb-0 fw-bold" style={{ color: '#2F318B' }}>
@@ -601,10 +628,10 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Top Locations */}
-        <div className="col-xl-4 col-lg-4">
+        {/* <div className="col-xl-4 col-lg-4">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-header bg-white py-3 border-0">
               <h5 className="card-title mb-0 fw-bold" style={{ color: '#2F318B' }}>
@@ -647,10 +674,10 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Latest Items */}
-        <div className="col-xl-4 col-lg-4">
+        {/* <div className="col-xl-4 col-lg-4">
           <div className="card border-0 shadow-sm h-100">
             <div className="card-header bg-white py-3 border-0">
               <h5 className="card-title mb-0 fw-bold" style={{ color: '#2F318B' }}>
@@ -701,7 +728,7 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* New Section: Recent Activities */}
@@ -750,7 +777,7 @@ const Dashboard = () => {
                         {activity.type === 'add' ? (
                           <p className="mb-0 small text-muted">
                             <i className="fas fa-user me-1"></i>
-                            ผู้แจ้ง: {activity.reporter}
+                            ผู้รับแจ้ง: {activity.reporter}
                           </p>
                         ) : (
                           <p className="mb-0 small text-muted">
@@ -780,7 +807,7 @@ const Dashboard = () => {
       </div>
 
       {/* Summary Stats */}
-      <div className="row g-4 mt-2">
+      {/* <div className="row g-4 mt-2">
         <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-header bg-white py-3 border-0">
@@ -824,7 +851,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

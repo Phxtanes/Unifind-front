@@ -162,7 +162,7 @@ function Main() {
               เข้าสู่ระบบ (สำหรับเจ้าหน้าที่)
             </button>
             <br />
-            <button onClick={() => setShowRegister(true)} className="btn btn-secondary" style={{
+            {/* <button onClick={() => setShowRegister(true)} className="btn btn-secondary" style={{
               padding: '12px 24px',
               fontSize: '16px',
               backgroundColor: '#28a745',
@@ -174,7 +174,7 @@ function Main() {
               boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
             }}>
               สมัครสมาชิก (ขอเป็นเจ้าหน้าที่)
-            </button>
+            </button> */}
           </div>
         )}
 
@@ -217,7 +217,7 @@ function Main() {
               />
               <div className="login-options">
                 <label>
-                  <input type="checkbox" /> Remember me
+                  {/* <input type="checkbox" /> Remember me */}
                 </label>
                 <span 
                   className="forgot-password" 
@@ -252,7 +252,7 @@ function Main() {
           <div className="login-container">
             <h4 className="login-title">== สมัครสมาชิก ==</h4>
             <p className="text-center text-muted mb-3" style={{ fontSize: '14px' }}>
-              ขอเป็นเจ้าหน้าที่ (รอการอนุมัติจากผู้ดูแลระบบ)
+              การขอเป็นเจ้าหน้าที่ (รอการอนุมัติจากผู้ดูแลระบบ)
             </p>
             
             {error && (
@@ -309,7 +309,7 @@ function Main() {
                     setShowLogin(true);
                   }}
                 >
-                  มีบัญชีแล้ว? เข้าสู่ระบบ
+                  มีบัญชีแล้ว ? เข้าสู่ระบบ
                 </span>
               </div>
               
