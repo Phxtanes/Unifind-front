@@ -14,7 +14,7 @@ body {
 
 .left-panel {
   flex: 1;
-  background: linear-gradient(to right, #2F318B 80%, #ff6600 100%);
+  background: linear-gradient(to right, #2ac5a6 80%, #91ddce 100%);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -29,7 +29,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background-color: #ff6600;
+  background-color: #91ddce;
   width: 30%;
 }
 
@@ -49,13 +49,13 @@ body {
   border: 2px solid white;
 }
 
-.logo-orange-box {
+.logo-green-box {
   position: absolute;
   bottom: 0;
   right: 0;
   width: 40px;
   height: 40px;
-  background-color: #ff6600;
+  background-color: #91ddce;
 }
 
 .content-container {
@@ -83,8 +83,8 @@ body {
   text-transform: uppercase;
 }
 
-.welfare {
-  font-size: 130px;
+.development {
+  font-size: 100px;
   font-weight: 1000;
   margin: 0;
   line-height: 0.9;
@@ -258,7 +258,7 @@ body {
     flex-direction: column;
     height: auto;
     min-height: 100vh;
-    background: linear-gradient(to bottom, #2F318B 0%, #ff6600 100%);
+    background: linear-gradient(to right, #2ac5a6 80%, #91ddce 100%);
   }
   
   .left-panel {
@@ -304,7 +304,7 @@ body {
   }
   
   .logo-white-box,
-  .logo-orange-box {
+  .logo-green-box {
     width: 35px;
     height: 35px;
   }

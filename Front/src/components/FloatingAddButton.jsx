@@ -303,7 +303,7 @@ const FloatingAddButton = () => {
             onClick={(e) => e.stopPropagation()}
           >rgb(162 175 223)
             <div className="modal-content">
-              <div className="modal-header" style={{ background: 'linear-gradient(135deg, #00008b  0%, #ff7f50 100%)', color: 'white' }}>
+              <div className="modal-header" style={{ background: 'linear-gradient(135deg, #2ac5a6  0%, #2ac5a6 100%)', color: 'white' }}>
                 <h5 className="modal-title">
                   <i className="fas fa-plus-circle me-2"></i>
                   

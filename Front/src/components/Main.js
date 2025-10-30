@@ -127,14 +127,14 @@ function Main() {
         <div className="content-container">
           <div className="logo">
             <div className="logo-white-box"></div>
-            <div className="logo-orange-box"></div>
+            <div className="logo-green-box"></div>
           </div>
 
           <div className="title-container">
             <h2 className="office-of">OFFICE OF</h2>
             <h1 className="student">STUDENT</h1>
-            <h1 className="welfare">WELFARE</h1>
-            <p className="thai-text">สำนักสวัสดิการนักศึกษา มหาวิทยาลัยหอการค้าไทย</p>
+            <h1 className="development">Development</h1>
+            <p className="thai-text">สำนักพัฒนานักศึกษา มหาวิทยาลัยหอการค้าไทย</p>
           </div>
         </div>
 
@@ -145,7 +145,7 @@ function Main() {
           </div>
           <div className="contact-item">
             <div className="contact-icon">📱</div>
-            <a className="contact-text" href="https://facebook.com/utccstudentwelfare" target="_blank" rel="noopener noreferrer" >facebook.com/utccstudentwelfare</a>
+            <a className="contact-text" href="https://facebook.com/utccstudentdevelopment" target="_blank" rel="noopener noreferrer" >facebook.com/utccstudentdevelopment</a>
           </div>
           <div className="contact-item">
             <div className="contact-icon">🌐</div>
